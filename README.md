@@ -43,7 +43,14 @@ Example execution:
 > crash test -f mytest.yml -s base_url=http://example/foo
 ```
 
-## Test Plan
+## Test File
+
+The test YAML file includes these properties:
+
+* `plans` - Required. A list of plans which define steps to execute.
+* `vars` - Optional. Key-value pairs available to the test runtime.
+
+### Plans
 
 ```yaml
 ---
@@ -63,7 +70,7 @@ plans:
     - body contains 'something crazy' // example failure!
 ```
 
-Output:
+Running the above plan yields the following output:
 
 ```
 [#] {0.000s} Sooper Site
