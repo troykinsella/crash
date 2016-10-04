@@ -14,7 +14,7 @@ deploy:
   file:
     - crash_darwin_amd64
     - crash_linux_amd64
-    - crash_windows_amd64
+    - crash_windows_amd64.exe
   skip_cleanup: true
   on:
     repo: troykinsella/crash
