@@ -5,7 +5,7 @@ go:
 install:
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
-- gox -arch="amd64" -os="darwin linux windows" -output="crash_{{.OS}}_{{.Arch}}"
+- gox -arch="amd64" -os="darwin linux windows" -output="crash_{{.OS}}_{{.Arch}}" github.com/troykinsella/crash/cmd
 - ls -altR # TEMP
 deploy:
   provider: releases
