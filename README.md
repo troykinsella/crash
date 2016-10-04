@@ -16,6 +16,16 @@ response code of 200, repetitions, and concurrency.
 * JSON test event output
 * Query DSL for extracting data and performing assertions
 
+## Installation
+
+Head over to [Releases](https://github.com/troykinsella/crash/releases/) and download the appropriate 
+binary for your system. Then:
+
+```bash
+> sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash
+> sudo chmod +x https://github.com/troykinsella/crash/releases/
+```
+
 ## Usage
 
 ### Test Operation
