@@ -1,6 +1,8 @@
 Crash
 =====
 
+[![Version](https://badge.fury.io/gh/troykinsella%2Fcrash.svg)](https://badge.fury.io/gh/troykinsella%2Fcrash)
+[![License](https://img.shields.io/github/license/troykinsella/crash.svg)](https://github.com/troykinsella/crash/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/troykinsella/crash.svg?branch=master)](https://travis-ci.org/troykinsella/crash)
 
 A command-line tool for executing test plans and reporting results.
