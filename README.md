@@ -1,6 +1,8 @@
 Crash
 =====
 
+[![Build Status](https://travis-ci.org/troykinsella/crash.svg?branch=master)](https://travis-ci.org/troykinsella/crash)
+
 A command-line tool for executing test plans and reporting results.
 
 ## Test Plan
