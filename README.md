@@ -23,7 +23,7 @@ binary for your system. Then:
 
 ```bash
 > sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash
-> sudo chmod +x https://github.com/troykinsella/crash/releases/
+> sudo chmod +x /usr/local/bin/crash
 ```
 
 ## Usage
@@ -50,7 +50,7 @@ OPTIONS:
 Example execution:
 
 ```bash
-> crash test -f mytest.yml -s base_url=http://example/foo
+> crash test -f mytest.yml -s base_url=http://example.com/foo
 ```
 
 ## Test File
