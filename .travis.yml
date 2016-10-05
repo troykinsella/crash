@@ -6,6 +6,7 @@ install:
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
 - gox -arch="amd64" -os="darwin linux windows" -output="crash_{{.OS}}_{{.Arch}}" github.com/troykinsella/crash/cmd
+- sha256sum crash_* > sha256sum.txt
 deploy:
   provider: releases
   api_key:
@@ -14,7 +15,12 @@ deploy:
     - crash_darwin_amd64
     - crash_linux_amd64
     - crash_windows_amd64.exe
+    - sha256sum.txt
   skip_cleanup: true
   on:
     repo: troykinsella/crash
     tags: true
+after_success:
+- pip install mkdocs
+- mkdocs build
+- ./.publish-docs.sh
