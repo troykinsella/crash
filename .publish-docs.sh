@@ -23,7 +23,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
 
   # Commit and push changes
   git add -f .
-  git commit -m "Generated docs for master build $TRAVIS_BUILD_NUMBER"
+  git commit -m "Generate docs for master build $TRAVIS_BUILD_NUMBER"
   git push -fq origin gh-pages > /dev/null
 
   echo "Successfully published generated documentation"
