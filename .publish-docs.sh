@@ -17,7 +17,8 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
 
   # Update gh-pages
   cd gh-pages
-  git rm -rf * > /dev/null
+  rm -rf * > /dev/null
+  git add --all
   cp -R $SITE_DIR/* .
 
   # Commit and push changes
