@@ -1,5 +1,6 @@
 language: go
 sudo: required
+cache: pip
 go:
 - 1.7
 - tip
