@@ -1,7 +1,0 @@
-site_name: Crash
-repo_url: https://github.com/troykinsella/crash
-site_author: Troy Kinsella
-pages:
-- Home: index.md
-- Test Plans: test_plans.md
-theme: readthedocs
