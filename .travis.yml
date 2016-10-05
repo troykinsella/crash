@@ -21,6 +21,6 @@ deploy:
     repo: troykinsella/crash
     tags: true
 after_success:
-- pip install mkdocs
+- pip install --user mkdocs
 - mkdocs build
 - ./.publish-docs.sh
