@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -xe
 
 make_binaries() {
     gox -arch="amd64" \
@@ -12,6 +12,8 @@ make_binaries() {
 gen_docs() {
     mkdocs build --clean
     tar -zcf crash_docs.tar.gz site/*
+
+    ls -altR # TEMP
 }
 
 # Main
