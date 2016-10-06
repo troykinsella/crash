@@ -9,9 +9,9 @@ install:
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
 script:
-- .build.sh
+- ./.build.sh
 after_success:
-- .publish-docs.sh
+- ./.publish-docs.sh
 deploy:
   provider: releases
   api_key:
