@@ -9,6 +9,7 @@ install:
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
 script:
+- go test -v ./...
 - ./.build.sh
 after_success:
 - ./.publish-docs.sh

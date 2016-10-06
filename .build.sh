@@ -2,10 +2,6 @@
 
 set -e
 
-test() {
-    go test -v ./...
-}
-
 make_binaries() {
     gox -arch="amd64" \
         -os="darwin linux windows" \
@@ -15,13 +11,10 @@ make_binaries() {
 
 gen_docs() {
     mkdocs build --clean
-    mv site crash_docs
-    tar -zcf crash_docs.tar.gz crash_docs/*
+    tar -zcf crash_docs.tar.gz site/*
 }
 
 # Main
-
-test
 
 # Is a tag build?
 if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ]; then
