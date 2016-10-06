@@ -1,7 +1,13 @@
-site_name: Crash
+site_name: Crash Documentation
 repo_url: https://github.com/troykinsella/crash
 site_author: Troy Kinsella
+site_favicon: favicon.ico
+copyright: Copyright © 2016 Troy Kinsella
 pages:
-- Home: index.md
+- index.md
 - Test Plans: test_plans.md
+- Action Reference:
+  - http: actions/http.md
+  - shell: actions/shell.md
+- contributing.md
 theme: readthedocs

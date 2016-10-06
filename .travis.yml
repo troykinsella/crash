@@ -4,14 +4,14 @@ cache: pip
 go:
 - 1.7
 - tip
-env:
-  global:
-    secure: mh9hNEyghgwyVBGVDCVDlfHj7e+LonvnMxkv6p12VvDGoG21lgqlMtOhEb+4HVopVfBlyNPSt/rntBcA461vx6XRlmgvOnbQVGHGRFIV/MYM2+rNMyk0ecGZJ1IL4M6Dv/81vt7NRJ7Rf2MDyjzeFR/NgptNkdsM3Pc3zYxN51KmYRLbOuJYNZYin3+YDKXEJvnZzc2SYQUU5B+3TROUCfWr/UoxI/3xDTXNikLaeEJlgrebkhxxn4QAJia9jICSnuIx0kEq6YN4ApXMHTbP54j1qbuzBnQ8x9bxCB1eaOlf+UCi/0uK8Ias4TQHSHiDay2s4+w/uVg8+ebQIgzBqm8N2qgsqD/hspqhZXA+psDsYlJP4jhhluSIgiHHKu10XOnDMwRV6ji0BM3MYS8KNeLnzXCIlOQCG8zBrx9q7vcYSviqBUKGE6hlBBwwhpUZmx3odcBwyR14dl7p1HZFKH8eLrMXAahdKbRKdOZ54QeRlzCVUKTA6URF8JZT9Zm3K5/K1SwQipFSXtEIHNb33WKAWLP7yXS2ZbsreWGO0SEbeZjdfzcGYtmAAqIebmTdQkg9CFfVOi/R8QOuKbTeWm+KhHFeVQY+/TJBvSM1uxXiAaTtTMnECTXXkA8rV72TP0Pjz72kzNfO1qaP7ERfRpt8Na/BJLW7J+7e3U4MWlE=
 install:
+- pip install --user mkdocs
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
-- gox -arch="amd64" -os="darwin linux windows" -output="crash_{{.OS}}_{{.Arch}}" github.com/troykinsella/crash/cmd
-- sha256sum crash_* > sha256sum.txt
+script:
+- .build.sh
+after_success:
+- .publish-docs.sh
 deploy:
   provider: releases
   api_key:
@@ -20,12 +20,10 @@ deploy:
     - crash_darwin_amd64
     - crash_linux_amd64
     - crash_windows_amd64.exe
+    - crash_docs.tar.gz
     - sha256sum.txt
   skip_cleanup: true
   on:
     repo: troykinsella/crash
     tags: true
-after_success:
-- pip install --user mkdocs
-- mkdocs build
-- ./.publish-docs.sh
+    go: tip
