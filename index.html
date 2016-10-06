@@ -8,10 +8,11 @@
   
   <meta name="author" content="Troy Kinsella">
   
-  <title>Crash</title>
+  <title>Crash Documentation</title>
   
 
-  <link rel="shortcut icon" href="./img/favicon.ico">
+  <link rel="shortcut icon" href="favicon.ico">
+  
 
   
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
@@ -43,7 +44,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="." class="icon icon-home"> Crash</a>
+        <a href="." class="icon icon-home"> Crash Documentation</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -62,6 +63,8 @@
             
                 <li class="toctree-l3"><a href="#crash">Crash</a></li>
                 
+                    <li><a class="toctree-l4" href="#installation">Installation</a></li>
+                
             
             </ul>
         
@@ -71,6 +74,35 @@
             <li>
     <li class="toctree-l1 ">
         <a class="" href="test_plans/">Test Plans</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Action Reference</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="actions/http/">http</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="actions/shell/">shell</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="contributing/">Contributing</a>
         
     </li>
 <li>
@@ -85,7 +117,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href=".">Crash</a>
+        <a href=".">Crash Documentation</a>
       </nav>
 
       
@@ -112,7 +144,31 @@
             <div class="section">
               
                 <h1 id="crash">Crash</h1>
-<p>Yo</p>
+<p>Crash is a command-line tool for executing test plans and reporting results, written in Go.
+It works on Darwin, Linux, and Windows systems, with 64-bit architecture.</p>
+<hr />
+<h2 id="installation">Installation</h2>
+<h3 id="binary-distribution">Binary Distribution</h3>
+<p>Crash is distributed as a single OS-/Architecture-specific executable binary.</p>
+<p>Head over to <a href="https://github.com/troykinsella/crash/releases/">Releases</a> and download the appropriate 
+binary for your system. Then, move the binary to a convenient location:</p>
+<pre><code class="bash">$ sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash
+$ sudo chmod +x /usr/local/bin/crash
+</code></pre>
+
+<h3 id="building-from-source">Building from Source</h3>
+<p>Set up a <a href="https://golang.org/doc/code.html">Go workspace</a>.</p>
+<p>Get the sources:</p>
+<pre><code class="sh">$ go get github.com/troykinsella/crash
+</code></pre>
+
+<p>Install dependencies:</p>
+<pre><code class="sh">$ go get -d -v ./...
+</code></pre>
+
+<p>Build the binary:</p>
+<pre><code class="sh">$ go build -o crash -v github.com/troykinsella/crash/cmd
+</code></pre>
               
             </div>
           </div>
@@ -130,6 +186,8 @@
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright © 2016 Troy Kinsella</p>
     
   </div>
 
@@ -160,5 +218,5 @@
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-10-05 18:08:08.044544
+Build Date UTC : 2016-10-06 06:38:41.298785
 -->
