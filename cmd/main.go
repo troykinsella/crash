@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/urfave/cli"
 	"os"
-	"github.com/troykinsella/crash/app"
 )
 
 const (
-	version = "0.0.1"
+	version = "0.0.3"
+
+	nocolor = "nc"
 )
 
 func defCommands(app *cli.App) {
@@ -18,7 +19,12 @@ func defCommands(app *cli.App) {
 }
 
 func defGlobalFlags(app *cli.App) {
-
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name: nocolor,
+			Usage: "No color. Disable output colorization.",
+		},
+	}
 }
 
 func newCliApp() *cli.App {
@@ -31,15 +37,6 @@ func newCliApp() *cli.App {
 	defGlobalFlags(app)
 
 	return app
-}
-
-func newApp(c *cli.Context) *app.Crash {
-	crash, err := app.New()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	return crash
 }
 
 func main() {

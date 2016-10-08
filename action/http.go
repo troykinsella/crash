@@ -6,6 +6,7 @@ import (
 	"strings"
 	"github.com/troykinsella/crash/logging"
 	"strconv"
+	"fmt"
 )
 
 type Http struct {
@@ -14,6 +15,10 @@ type Http struct {
 
 func (h *Http) Run() (*Result, error) {
 	url := h.config.Params.GetString("url")
+	if url == "" {
+		return nil, fmt.Errorf("url parameter required")
+	}
+
 	method := h.config.Params.GetString("method")
 	if method == "" {
 		method = "GET"

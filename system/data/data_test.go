@@ -51,9 +51,13 @@ func TestLooseEqual(t *testing.T) {
 		{"false", "false", true},
 
 		// strings
-		{"foo", "bar", false},
-		{"bar", "foo", false},
-		{"foo", "foo", true},
+		{"foo", "bar",       false},
+		{"bar", "foo",       false},
+		{"foo", "foo",       true},
+		{"foo\n", "bar\n",   false},
+		{"foo\n", "foo\n",   true},
+		{"\r\n\t", "\n\r\t", false},
+		{"\r\n\t", "\r\n\t", true},
 
 		// integers
 		{0,  0,  true},

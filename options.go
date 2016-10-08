@@ -1,10 +1,12 @@
 package crash
 
+import "github.com/troykinsella/crash/logging"
+
 type TestOptions struct {
-	InputFile string
-	Debug bool
-	Quiet bool
-	LogJson bool
-	Variables map[string]string
+	Crashfile      string
+	LogLevel       logging.Level
+	Colorize       bool
+	LogJson        bool
+	Variables      map[string]string
 	VariablesFiles []string
 }

@@ -5,15 +5,9 @@ Crash
 [![License](https://img.shields.io/github/license/troykinsella/crash.svg)](https://github.com/troykinsella/crash/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/troykinsella/crash.svg?branch=master)](https://travis-ci.org/troykinsella/crash)
 
-A command-line tool for executing test plans and reporting results. Test plans, defined in YAML,
+A command-line tool for executing test plans and reporting results. Test plans, `Crashfile`s, defined in YAML,
 direct the execution of actions, such as HTTP requests, checks, such as asserting an HTTP
 response code of 200, repetitions, and concurrency.
-
-## Features
-
-* Human readable test output
-* JSON test event output
-* Query DSL for extracting data and performing assertions
 
 ## Documentation
 
@@ -24,7 +18,6 @@ User documentation can be found at https://troykinsella.github.io/crash/
 ### Test Operation
 
 ```bash
-> crash test -h
 NAME:
    crash test - Execute a test plan
 
@@ -32,12 +25,11 @@ USAGE:
    crash test [command options] [arguments...]
 
 OPTIONS:
-   -d            Debug mode; increase logging verbosity
-   -j            Format logging output as JSON
-   -q            Quiet mode; suppress logging
-   -s key=value  Variable key pair key=value
-   -f FILE       Input test yaml FILE
-   -v FILE       Variables yaml FILE
+   -j                 Format logging output as JSON
+   -q                 Quiet mode; suppress logging
+   -v                 Verbose logging; Use -vv or -vvv to increase verbosity
+   -s FILE|KEY=VALUE  Variable FILE|KEY=VALUE
+   -f FILE            Input test yaml FILE; Defaults to searching for Crashfile.y[a]ml in the current directory
 ```
 
 Example execution:

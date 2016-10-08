@@ -159,16 +159,21 @@ func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
 
 	go func() {
 		result, err := a.Run()
-		success := err == nil
 
-		ctx.vars.SetAll(result.Data)
+		success := err == nil
+		var data map[string]interface{}
+
+		if success {
+			data = result.Data
+			ctx.vars.SetAll(data)
+		}
 
 		ch <- &StepResult{
 			Success: success,
 			Error: err,
 		}
 
-		ctx.log.Finish(logging.ACTION, step.RunDuration(), config.Name, result.Data)
+		ctx.log.Finish(logging.ACTION, step.RunDuration(), config.Name, data)
 	}()
 
 	return ch

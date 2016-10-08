@@ -9,15 +9,6 @@ make_binaries() {
         github.com/troykinsella/crash/cmd
 }
 
-gen_docs() {
-    mkdocs build --clean
-    tar -zcf crash_docs.tar.gz site/*
-}
-
-# Main
-
-gen_docs
-
 # Is a tag build?
 if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ -n "$TRAVIS_TAG" ]; then
     make_binaries

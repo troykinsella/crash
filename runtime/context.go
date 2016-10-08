@@ -17,17 +17,13 @@ func newTestContext(options *crash.TestOptions, config *crash.Config) (*Context,
 		vars.Set(k, v)
 	}
 
-	fileVars, err := loadVariablesFiles(options.VariablesFiles)
-	if err != nil {
-		return nil, err
-	}
-	vars.SetAll(fileVars)
-
 	for k, v := range options.Variables {
 		vars.Set(k, v)
 	}
 
-	log := logging.NewLogger(!options.Quiet, options.Debug, options.LogJson)
+	log := logging.NewLogger(options.LogLevel,
+		options.Colorize,
+		options.LogJson)
 
 	return &Context{
 		log: log,

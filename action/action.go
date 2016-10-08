@@ -23,6 +23,8 @@ func NewAction(config *ActionConfig) Action {
 	switch config.Name {
 	case "http":
 		return NewHttp(config)
+	case "shell":
+		return NewShell(config)
 	}
 	return nil
 }
