@@ -11,8 +11,8 @@ install:
 - go get -d -v ./...
 script:
 - go test -v ./...
-- ./.gen-docs.sh
 - ./.build.sh
+- ./.gen-docs.sh
 after_success:
 - ./.publish-docs.sh
 deploy:
