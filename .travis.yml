@@ -2,7 +2,7 @@ language: go
 sudo: required
 cache: pip
 go:
-- 1.7
+#- 1.7
 - tip
 install:
 - pip install --user mkdocs
