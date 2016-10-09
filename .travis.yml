@@ -10,9 +10,6 @@ install:
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
 script:
-- echo $PWD
-- echo $PATH
-- ls -altR
 - go test -v ./...
 - ./.build.sh
 - ./.gen-docs.sh

@@ -7,7 +7,7 @@ make_binaries() {
         -os="darwin linux windows" \
         -output="crash_{{.OS}}_{{.Arch}}" \
         github.com/troykinsella/crash/cmd
-    ln -s crash_linux_amd64 crash
+    ln -s crash_linux_amd64 $GOPATH/bin/crash
 }
 
 # Is a tag build?
