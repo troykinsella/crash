@@ -64,14 +64,21 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../../test_plans/">Test Plans</a>
+        <a class="" href="../../crashfile_reference/">Crashfile Reference</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../commands/">Commands</a>
         
     </li>
 <li>
           
             <li>
     <ul class="subnav">
-    <li><span>Action Reference</span></li>
+    <li><span>Actions</span></li>
 
         
             
@@ -133,7 +140,7 @@
     
       
         
-          <li>Action Reference &raquo;</li>
+          <li>Actions &raquo;</li>
         
       
     
@@ -190,7 +197,7 @@
 <tbody>
 <tr>
 <td>body</td>
-<td></td>
+<td>The response body string.</td>
 </tr>
 <tr>
 <td>headers</td>
@@ -200,11 +207,15 @@
 <td>status-code</td>
 <td>The HTTP response status code.</td>
 </tr>
+<tr>
+<td>raw-body</td>
+<td>The response body bytes.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="examples">Examples</h2>
-<p>Test plan:</p>
-<pre><code class="yaml">---
+<pre><code class="yaml"># Crashfile
+---
 plans:
 - plan: Sooper Site
   steps:
@@ -218,22 +229,14 @@ plans:
     - status-code in 200, 299 // http status ${status-code} is 2xx
     - body contains '&lt;!doctype html&gt;' // has html5 doctype declaration
     - headers.content-type eq 'text/html'
-    - body contains 'something crazy' // example failure!
 </code></pre>
 
-<p>Running the above plan yields the following output:</p>
-<pre><code>[#] {0.000s} Sooper Site
-[-] {0.000s} serial...
-[!] {0.000s} Home Page
-[I] {0.000s} GET http://example.com
-[I] {0.166s} GET http://example.com -&gt; 200
-[!] {0.166s} (166.220661ms) Home Page
-[✓] http status 200 is 2xx
-[✓] has html5 doctype declaration
-[✓] headers.content-type eq 'text/html'
-[✗] example failure!
-[-] {0.166s} (166.388073ms) 
-[#] {0.166s} (166.407687ms) Sooper Site
+<p>Standard output (-vvv):</p>
+<pre><code>exec: &quot;crash&quot;: executable file not found in $PATH
+</code></pre>
+
+<p>JSON output (-vvv):</p>
+<pre><code class="json">exec: &quot;crash&quot;: executable file not found in $PATH
 </code></pre>
               
             </div>
@@ -245,7 +248,7 @@ plans:
         <a href="../shell/" class="btn btn-neutral float-right" title="shell">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../test_plans/" class="btn btn-neutral" title="Test Plans"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../commands/" class="btn btn-neutral" title="Commands"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -275,7 +278,7 @@ plans:
           <a href="https://github.com/troykinsella/crash" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../../test_plans/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../../commands/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../shell/" style="color: #fcfcfc">Next &raquo;</a></span>

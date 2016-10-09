@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Crash\n\n\nCrash is a command-line tool for executing test plans and reporting results, written in Go.\nIt works on Darwin, Linux, and Windows systems, with 64-bit architecture.\n\n\n\n\nInstallation\n\n\nBinary Distribution\n\n\nCrash is distributed as a single OS-/Architecture-specific executable binary.\n\n\nHead over to \nReleases\n and download the appropriate \nbinary for your system. Then, move the binary to a convenient location:\n\n\n$ sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash\n$ sudo chmod +x /usr/local/bin/crash\n\n\n\n\nBuilding from Source\n\n\nSet up a \nGo workspace\n.\n\n\nGet the sources:\n\n\n$ go get github.com/troykinsella/crash\n\n\n\n\nInstall dependencies:\n\n\n$ go get -d -v ./...\n\n\n\n\nBuild the binary:\n\n\n$ go build -o crash -v github.com/troykinsella/crash/cmd", 
+            "text": "Crash\n\n\nCrash is a command-line tool for executing test plans and reporting results, written in Go.\nIt works on Darwin, Linux, and Windows systems, with 64-bit architecture.\n\n\n\n\nInstallation\n\n\nBinary Distribution\n\n\nCrash is distributed as a single OS-/Architecture-specific executable binary.\n\n\nHead over to \nReleases\n and download the appropriate \nbinary for your system. Then, move the binary to a convenient location:\n\n\n$ sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash\n$ sudo chmod +x /usr/local/bin/crash\n\n\n\n\nBuilding from Source\n\n\nSet up a \nGo workspace\n.\n\n\nGet the sources:\n\n\n$ go get github.com/troykinsella/crash\n\n\n\n\nInstall dependencies:\n\n\n$ go get -d -v ./...\n\n\n\n\nBuild the binary:\n\n\n$ go build -o crash -v github.com/troykinsella/crash/cmd\n\n\n\n\nGetting Started", 
             "title": "Home"
         }, 
         {
@@ -26,68 +26,88 @@
             "title": "Building from Source"
         }, 
         {
-            "location": "/test_plans/", 
-            "text": "Introduction\n\n\nTest plans tell \ncrash\n what to do.\n\n\n\n\nThe Plan File\n\n\nPlans\n\n\nDefined at the root of the test plan document, \nplans\n is a list of plan objects, \nand every test plan document must define it. Plans are executed in the order defined, \nserially. Must have at least one entry.\n\n\nPlan\n\n\nA plan object defines a name and the list of steps that \ncrash\n will execute in a test run. \n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nplan\n\n\nyes\n\n\nThe name of the plan which appears in test output.\n\n\n\n\n\n\nsteps\n\n\nyes\n\n\nA list of steps to execute. This step list is really an implicit \nserial\n step, which executes the steps sequentially, serially.\n\n\n\n\n\n\n\n\nExample:\n\n\n---\nplans:\n- plan: Plan A\n  steps:\n  # ...\n\n\n\n\nStep\n\n\nA step can be one of the types listed in the \nPlan Steps\n section.\nAny kind of step object may have the following properties:\n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\ncheck\n\n\nno\n\n\nA list of assertions to perform after the execution of the step is complete.\n\n\n\n\n\n\n\n\nVars\n\n\nDefined at the root of the test plan document, \nvars\n defines constants that are available\nat execution time.\n\n\n---\nvars:\n  key: value\n  foo: bar\n\n\n\n\nPlan Steps\n\n\nParallel\n\n\nExecute a list of steps in parallel. The parallel step, itself, completes when all of the nested steps\nhave completed.\n\n\nExample:\n\n\n# ...\n- parallel:\n  - # step 1 ...\n  - # step 2 ...\n\n\n\n\nRun\n\n\nRun an action. Available actions can be browsed in the \"Action Reference\" from the main menu.\n\n\nActions are represented by an object having a \nrun\n property that has an object value. The object\nvalue has the following properties:\n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nname\n\n\nyes\n\n\nThe name of the action which appears in test output.\n\n\n\n\n\n\ntype\n\n\nyes\n\n\nDictates which action is selected for execution.\n\n\n\n\n\n\nparams\n\n\nyes\n\n\nAn object defining action-specific key-value pairs that are passed into the action.\n\n\n\n\n\n\n\n\nExample:\n\n\n# ...\n- run:\n    name: Home page sample\n    type: http\n    params:\n      url: http://fooland.org\n\n\n\n\nSerial\n\n\nExecute a list of steps one after the other. The serial step, itself, completes when the last nested step completes.\n\n\nExample:\n\n\n# ...\n- serial:\n  - # step 1 ...\n  - # step 2 ...\n\n\n\n\nExample\n\n\nThis example intends to show all basic \ncrash\n features.\n\n\n---\nvars:\n  base_url: http://example.com\n\nplans:\n- plan: Sooper Site\n  steps:\n  - parallel:\n    - run:\n        name: home page\n        type: http\n        params:\n          url: ${base_url}\n      check:\n      - status-code in 200, 299 // http status ${status-code} is 4xx\n      - body contains '\n!doctype html\n' // has doctype declaration\n      - headers.content-type eq 'text/html'\n    - run:\n        name: about page\n        type: http\n        params:\n          url: ${base_url}/about.html\n      check:\n      - status-code eq 200\n      - body contains 'Copyright'", 
-            "title": "Test Plans"
+            "location": "/#getting-started", 
+            "text": "", 
+            "title": "Getting Started"
         }, 
         {
-            "location": "/test_plans/#introduction", 
-            "text": "Test plans tell  crash  what to do.", 
+            "location": "/crashfile_reference/", 
+            "text": "Introduction\n\n\nCrashfiles tell \ncrash\n what to do.\n\n\n\n\nThe Crashfile\n\n\nPlans\n\n\nDefined at the root of the test plan document, \nplans\n is a list of plan objects, \nand every test plan document must define it. Plans are executed in the order defined, \nserially. Must have at least one entry.\n\n\nPlan\n\n\nA plan object defines a name and the list of steps that \ncrash\n will execute in a test run. \n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nplan\n\n\nyes\n\n\nThe name of the plan which appears in test output.\n\n\n\n\n\n\nsteps\n\n\nyes\n\n\nA list of steps to execute. This step list is really an implicit \nserial\n step, which executes the steps sequentially, serially.\n\n\n\n\n\n\n\n\nExample:\n\n\n---\nplans:\n- plan: Plan A\n  steps:\n  # ...\n\n\n\n\nStep\n\n\nA step can be one of the types listed in the \nPlan Steps\n section.\nAny kind of step object may have the following properties:\n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\ncheck\n\n\nno\n\n\nA list of assertions to perform after the execution of the step is complete.\n\n\n\n\n\n\n\n\nVars\n\n\nDefined at the root of the test plan document, \nvars\n defines constants that are available\nat execution time.\n\n\n---\nvars:\n  key: value\n  foo: bar\n\n\n\n\nPlan Steps\n\n\nParallel\n\n\nExecute a list of steps in parallel. The parallel step, itself, completes when all of the nested steps\nhave completed.\n\n\nExample:\n\n\n# ...\n- parallel:\n  - # step 1 ...\n  - # step 2 ...\n\n\n\n\nRun\n\n\nRun an action. Available actions can be browsed in the \"Action Reference\" from the main menu.\n\n\nActions are represented by an object having a \nrun\n property that has an object value. The object\nvalue has the following properties:\n\n\n\n\n\n\n\n\nProperties\n\n\nRequired\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nname\n\n\nyes\n\n\nThe name of the action which appears in test output.\n\n\n\n\n\n\ntype\n\n\nyes\n\n\nDictates which action is selected for execution.\n\n\n\n\n\n\nparams\n\n\nyes\n\n\nAn object defining action-specific key-value pairs that are passed into the action.\n\n\n\n\n\n\n\n\nExample:\n\n\n# ...\n- run:\n    name: Home page sample\n    type: http\n    params:\n      url: http://fooland.org\n\n\n\n\nSerial\n\n\nExecute a list of steps one after the other. The serial step, itself, completes when the last nested step completes.\n\n\nExample:\n\n\n# ...\n- serial:\n  - # step 1 ...\n  - # step 2 ...\n\n\n\n\nExample\n\n\nThis example intends to show all basic \ncrash\n features.\n\n\n---\nvars:\n  base_url: http://example.com\n\nplans:\n- plan: Sooper Site\n  steps:\n  - parallel:\n    - run:\n        name: home page\n        type: http\n        params:\n          url: ${base_url}\n      check:\n      - status-code in 200, 299 // http status ${status-code} is 4xx\n      - body contains '\n!doctype html\n' // has doctype declaration\n      - headers.content-type eq 'text/html'\n    - run:\n        name: about page\n        type: http\n        params:\n          url: ${base_url}/about.html\n      check:\n      - status-code eq 200\n      - body contains 'Copyright'", 
+            "title": "Crashfile Reference"
+        }, 
+        {
+            "location": "/crashfile_reference/#introduction", 
+            "text": "Crashfiles tell  crash  what to do.", 
             "title": "Introduction"
         }, 
         {
-            "location": "/test_plans/#the-plan-file", 
+            "location": "/crashfile_reference/#the-crashfile", 
             "text": "", 
-            "title": "The Plan File"
+            "title": "The Crashfile"
         }, 
         {
-            "location": "/test_plans/#plans", 
+            "location": "/crashfile_reference/#plans", 
             "text": "Defined at the root of the test plan document,  plans  is a list of plan objects, \nand every test plan document must define it. Plans are executed in the order defined, \nserially. Must have at least one entry.", 
             "title": "Plans"
         }, 
         {
-            "location": "/test_plans/#plan", 
+            "location": "/crashfile_reference/#plan", 
             "text": "A plan object defines a name and the list of steps that  crash  will execute in a test run.      Properties  Required  Description      plan  yes  The name of the plan which appears in test output.    steps  yes  A list of steps to execute. This step list is really an implicit  serial  step, which executes the steps sequentially, serially.     Example:  ---\nplans:\n- plan: Plan A\n  steps:\n  # ...", 
             "title": "Plan"
         }, 
         {
-            "location": "/test_plans/#step", 
+            "location": "/crashfile_reference/#step", 
             "text": "A step can be one of the types listed in the  Plan Steps  section.\nAny kind of step object may have the following properties:     Properties  Required  Description      check  no  A list of assertions to perform after the execution of the step is complete.", 
             "title": "Step"
         }, 
         {
-            "location": "/test_plans/#vars", 
+            "location": "/crashfile_reference/#vars", 
             "text": "Defined at the root of the test plan document,  vars  defines constants that are available\nat execution time.  ---\nvars:\n  key: value\n  foo: bar", 
             "title": "Vars"
         }, 
         {
-            "location": "/test_plans/#plan-steps", 
+            "location": "/crashfile_reference/#plan-steps", 
             "text": "", 
             "title": "Plan Steps"
         }, 
         {
-            "location": "/test_plans/#parallel", 
+            "location": "/crashfile_reference/#parallel", 
             "text": "Execute a list of steps in parallel. The parallel step, itself, completes when all of the nested steps\nhave completed.  Example:  # ...\n- parallel:\n  - # step 1 ...\n  - # step 2 ...", 
             "title": "Parallel"
         }, 
         {
-            "location": "/test_plans/#run", 
+            "location": "/crashfile_reference/#run", 
             "text": "Run an action. Available actions can be browsed in the \"Action Reference\" from the main menu.  Actions are represented by an object having a  run  property that has an object value. The object\nvalue has the following properties:     Properties  Required  Description      name  yes  The name of the action which appears in test output.    type  yes  Dictates which action is selected for execution.    params  yes  An object defining action-specific key-value pairs that are passed into the action.     Example:  # ...\n- run:\n    name: Home page sample\n    type: http\n    params:\n      url: http://fooland.org", 
             "title": "Run"
         }, 
         {
-            "location": "/test_plans/#serial", 
+            "location": "/crashfile_reference/#serial", 
             "text": "Execute a list of steps one after the other. The serial step, itself, completes when the last nested step completes.  Example:  # ...\n- serial:\n  - # step 1 ...\n  - # step 2 ...", 
             "title": "Serial"
         }, 
         {
-            "location": "/test_plans/#example", 
+            "location": "/crashfile_reference/#example", 
             "text": "This example intends to show all basic  crash  features.  ---\nvars:\n  base_url: http://example.com\n\nplans:\n- plan: Sooper Site\n  steps:\n  - parallel:\n    - run:\n        name: home page\n        type: http\n        params:\n          url: ${base_url}\n      check:\n      - status-code in 200, 299 // http status ${status-code} is 4xx\n      - body contains ' !doctype html ' // has doctype declaration\n      - headers.content-type eq 'text/html'\n    - run:\n        name: about page\n        type: http\n        params:\n          url: ${base_url}/about.html\n      check:\n      - status-code eq 200\n      - body contains 'Copyright'", 
             "title": "Example"
         }, 
         {
+            "location": "/commands/", 
+            "text": "help\n\n\nexec: \ncrash\n: executable file not found in $PATH\n\n\n\n\ntest\n\n\nexec: \ncrash\n: executable file not found in $PATH", 
+            "title": "Commands"
+        }, 
+        {
+            "location": "/commands/#help", 
+            "text": "exec:  crash : executable file not found in $PATH", 
+            "title": "help"
+        }, 
+        {
+            "location": "/commands/#test", 
+            "text": "exec:  crash : executable file not found in $PATH", 
+            "title": "test"
+        }, 
+        {
             "location": "/actions/http/", 
-            "text": "http\n\n\nMake a request to an HTTP or HTTPS server.\n\n\n\n\nParameters\n\n\n\n\n\n\n\n\nName\n\n\nRequired\n\n\nDefault\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nmethod\n\n\nno\n\n\n\"GET\"\n\n\nThe HTTP request method to use.\n\n\n\n\n\n\nurl\n\n\nyes\n\n\n\n\nThe URL against which a request will be made. Must have an \"http://\" or \"https://\" scheme.\n\n\n\n\n\n\n\n\nOutputs\n\n\n\n\n\n\n\n\nName\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nbody\n\n\n\n\n\n\n\n\nheaders\n\n\nA map of HTTP headers returned in the response.\n\n\n\n\n\n\nstatus-code\n\n\nThe HTTP response status code.\n\n\n\n\n\n\n\n\nExamples\n\n\nTest plan:\n\n\n---\nplans:\n- plan: Sooper Site\n  steps:\n  - run:\n      name: Home Page\n      type: http\n      params:\n        method: get\n        url: http://example.com\n    check:\n    - status-code in 200, 299 // http status ${status-code} is 2xx\n    - body contains '\n!doctype html\n' // has html5 doctype declaration\n    - headers.content-type eq 'text/html'\n    - body contains 'something crazy' // example failure!\n\n\n\n\nRunning the above plan yields the following output:\n\n\n[#] {0.000s} Sooper Site\n[-] {0.000s} serial...\n[!] {0.000s} Home Page\n[I] {0.000s} GET http://example.com\n[I] {0.166s} GET http://example.com -\n 200\n[!] {0.166s} (166.220661ms) Home Page\n[\u2713] http status 200 is 2xx\n[\u2713] has html5 doctype declaration\n[\u2713] headers.content-type eq 'text/html'\n[\u2717] example failure!\n[-] {0.166s} (166.388073ms) \n[#] {0.166s} (166.407687ms) Sooper Site", 
+            "text": "http\n\n\nMake a request to an HTTP or HTTPS server.\n\n\n\n\nParameters\n\n\n\n\n\n\n\n\nName\n\n\nRequired\n\n\nDefault\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nmethod\n\n\nno\n\n\n\"GET\"\n\n\nThe HTTP request method to use.\n\n\n\n\n\n\nurl\n\n\nyes\n\n\n\n\nThe URL against which a request will be made. Must have an \"http://\" or \"https://\" scheme.\n\n\n\n\n\n\n\n\nOutputs\n\n\n\n\n\n\n\n\nName\n\n\nDescription\n\n\n\n\n\n\n\n\n\n\nbody\n\n\nThe response body string.\n\n\n\n\n\n\nheaders\n\n\nA map of HTTP headers returned in the response.\n\n\n\n\n\n\nstatus-code\n\n\nThe HTTP response status code.\n\n\n\n\n\n\nraw-body\n\n\nThe response body bytes.\n\n\n\n\n\n\n\n\nExamples\n\n\n# Crashfile\n---\nplans:\n- plan: Sooper Site\n  steps:\n  - run:\n      name: Home Page\n      type: http\n      params:\n        method: get\n        url: http://example.com\n    check:\n    - status-code in 200, 299 // http status ${status-code} is 2xx\n    - body contains '\n!doctype html\n' // has html5 doctype declaration\n    - headers.content-type eq 'text/html'\n\n\n\n\nStandard output (-vvv):\n\n\nexec: \ncrash\n: executable file not found in $PATH\n\n\n\n\nJSON output (-vvv):\n\n\nexec: \ncrash\n: executable file not found in $PATH", 
             "title": "http"
         }, 
         {
@@ -102,12 +122,12 @@
         }, 
         {
             "location": "/actions/http/#outputs", 
-            "text": "Name  Description      body     headers  A map of HTTP headers returned in the response.    status-code  The HTTP response status code.", 
+            "text": "Name  Description      body  The response body string.    headers  A map of HTTP headers returned in the response.    status-code  The HTTP response status code.    raw-body  The response body bytes.", 
             "title": "Outputs"
         }, 
         {
             "location": "/actions/http/#examples", 
-            "text": "Test plan:  ---\nplans:\n- plan: Sooper Site\n  steps:\n  - run:\n      name: Home Page\n      type: http\n      params:\n        method: get\n        url: http://example.com\n    check:\n    - status-code in 200, 299 // http status ${status-code} is 2xx\n    - body contains ' !doctype html ' // has html5 doctype declaration\n    - headers.content-type eq 'text/html'\n    - body contains 'something crazy' // example failure!  Running the above plan yields the following output:  [#] {0.000s} Sooper Site\n[-] {0.000s} serial...\n[!] {0.000s} Home Page\n[I] {0.000s} GET http://example.com\n[I] {0.166s} GET http://example.com -  200\n[!] {0.166s} (166.220661ms) Home Page\n[\u2713] http status 200 is 2xx\n[\u2713] has html5 doctype declaration\n[\u2713] headers.content-type eq 'text/html'\n[\u2717] example failure!\n[-] {0.166s} (166.388073ms) \n[#] {0.166s} (166.407687ms) Sooper Site", 
+            "text": "# Crashfile\n---\nplans:\n- plan: Sooper Site\n  steps:\n  - run:\n      name: Home Page\n      type: http\n      params:\n        method: get\n        url: http://example.com\n    check:\n    - status-code in 200, 299 // http status ${status-code} is 2xx\n    - body contains ' !doctype html ' // has html5 doctype declaration\n    - headers.content-type eq 'text/html'  Standard output (-vvv):  exec:  crash : executable file not found in $PATH  JSON output (-vvv):  exec:  crash : executable file not found in $PATH", 
             "title": "Examples"
         }, 
         {
