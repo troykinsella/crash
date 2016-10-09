@@ -6,7 +6,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
 
   echo "Publishing generated documentation..."
 
-  SITE_DIR="$(pwd)/site"
+  SITE_DIR="$(pwd)/tmp/site"
   test -d $SITE_DIR || { echo "site dir doesn't exist: $SITE_DIR"; exit 1; }
 
   # Clone gh-pages
