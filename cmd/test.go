@@ -19,6 +19,7 @@ const (
 	verbose3    = "vvv"
 	setVariable = "s"
 	testFile    = "f"
+	nocolor     = "nc"
 )
 
 func loadVariablesFile(file string, vars map[string]string) error {
@@ -77,7 +78,7 @@ func newTestOptions(c *cli.Context) (*crash.TestOptions, error) {
 	options := &crash.TestOptions{
 		Crashfile: c.String(testFile),
 		LogLevel: logLevel(c),
-		Colorize: !c.Bool(nocolor),
+		Colorize: !c.IsSet(nocolor),
 		LogJson: c.Bool(json),
 		Variables: vars,
 	}
@@ -113,8 +114,16 @@ func newTestCommand() *cli.Command {
 				Usage: "Format logging output as JSON",
 			},
 			cli.BoolFlag{
+				Name: nocolor,
+				Usage: "No color. Disable output colorization.",
+			},
+			cli.BoolFlag{
 				Name: quiet,
 				Usage: "Quiet mode; suppress logging",
+			},
+			cli.StringSliceFlag{
+				Name:  setVariable,
+				Usage: "Set variable(s) `FILE|KEY=VALUE`",
 			},
 			cli.BoolFlag{
 				Name: verbose1,
@@ -127,10 +136,6 @@ func newTestCommand() *cli.Command {
 			cli.BoolFlag{
 				Name: verbose3,
 				Hidden: true,
-			},
-			cli.StringSliceFlag{
-				Name:  setVariable,
-				Usage: "Variable `FILE|KEY=VALUE`",
 			},
 			cli.StringFlag{
 				Name:  testFile,

@@ -38,3 +38,7 @@ Build the binary:
 $ go build -o crash -v github.com/troykinsella/crash/cmd
 ```
 
+## Getting Started
+
+
+

@@ -1,10 +1,10 @@
 # Introduction
 
-Test plans tell `crash` what to do.
+Crashfiles tell `crash` what to do.
 
 ---
 
-## The Plan File
+## The Crashfile
 
 ### Plans
 

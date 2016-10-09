@@ -15,46 +15,24 @@ url          | yes      |              | The URL against which a request will be
 
 Name         | Description
 ------------ | ------------
-body         | 
+body         | The response body string.
 headers      | A map of HTTP headers returned in the response.
 status-code  | The HTTP response status code.
+raw-body     | The response body bytes.
 
 ## Examples
 
-Test plan:
-
 ```yaml
----
-plans:
-- plan: Sooper Site
-  steps:
-  - run:
-      name: Home Page
-      type: http
-      params:
-        method: get
-        url: http://example.com
-    check:
-    - status-code in 200, 299 // http status ${status-code} is 2xx
-    - body contains '<!doctype html>' // has html5 doctype declaration
-    - headers.content-type eq 'text/html'
-    - body contains 'something crazy' // example failure!
+# Crashfile
+{{ shell "cat docs/actions/http_example.yml" }}
 ```
 
-Running the above plan yields the following output:
-
+Standard output (-vvv):
 ```
-[#] {0.000s} Sooper Site
-[-] {0.000s} serial...
-[!] {0.000s} Home Page
-[I] {0.000s} GET http://example.com
-[I] {0.166s} GET http://example.com -> 200
-[!] {0.166s} (166.220661ms) Home Page
-[✓] http status 200 is 2xx
-[✓] has html5 doctype declaration
-[✓] headers.content-type eq 'text/html'
-[✗] example failure!
-[-] {0.166s} (166.388073ms) 
-[#] {0.166s} (166.407687ms) Sooper Site
+{{ shell "crash test -vvv --nc -f docs/actions/http_example.yml" }}
 ```
 
+JSON output (-vvv):
+```json
+{{ shell "crash test -vvv -j -f docs/actions/http_example.yml" }}
+```

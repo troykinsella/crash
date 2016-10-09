@@ -5,8 +5,9 @@ site_favicon: favicon.ico
 copyright: Copyright © 2016 Troy Kinsella
 pages:
 - index.md
-- Test Plans: test_plans.md
-- Action Reference:
+- Crashfile Reference: crashfile_reference.md
+- Commands: commands.md
+- Actions:
   - http: actions/http.md
   - shell: actions/shell.md
 - contributing.md

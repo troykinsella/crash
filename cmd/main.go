@@ -7,9 +7,7 @@ import (
 )
 
 const (
-	version = "0.0.3"
-
-	nocolor = "nc"
+	version = "0.0.4"
 )
 
 func defCommands(app *cli.App) {
@@ -18,14 +16,7 @@ func defCommands(app *cli.App) {
 	}
 }
 
-func defGlobalFlags(app *cli.App) {
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name: nocolor,
-			Usage: "No color. Disable output colorization.",
-		},
-	}
-}
+func defGlobalFlags(app *cli.App) {}
 
 func newCliApp() *cli.App {
 	app := cli.NewApp()

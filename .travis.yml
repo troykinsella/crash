@@ -6,6 +6,7 @@ go:
 - tip
 install:
 - pip install --user mkdocs
+- go get github.com/noqcks/gucci
 - go get github.com/mitchellh/gox
 - go get -d -v ./...
 script:
