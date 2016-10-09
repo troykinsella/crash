@@ -14,6 +14,9 @@ script:
 - ./.build.sh
 - ./.gen-docs.sh
 after_success:
+- echo $PATH
+- ls -altR
+- which crash
 - ./.publish-docs.sh
 deploy:
   provider: releases
