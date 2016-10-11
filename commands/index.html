@@ -152,11 +152,38 @@
             <div class="section">
               
                 <h2 id="help">help</h2>
-<pre><code>exec: &quot;crash&quot;: executable file not found in $PATH
+<pre><code>NAME:
+   crash - test utility
+
+USAGE:
+   crash [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.4
+
+COMMANDS:
+     test, t  Execute a test plan
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
 </code></pre>
 
 <h2 id="test">test</h2>
-<pre><code>exec: &quot;crash&quot;: executable file not found in $PATH
+<pre><code>NAME:
+   crash test - Execute a test plan
+
+USAGE:
+   crash test [command options] [arguments...]
+
+OPTIONS:
+   -j                 Format logging output as JSON
+   --nc               No color. Disable output colorization.
+   -q                 Quiet mode; suppress logging
+   -s FILE|KEY=VALUE  Set variable(s) FILE|KEY=VALUE
+   -v                 Verbose logging; Use -vv or -vvv to increase verbosity
+   -f FILE            Input test yaml FILE; Defaults to searching for Crashfile.y[a]ml in the current directory
 </code></pre>
               
             </div>
