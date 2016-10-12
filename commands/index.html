@@ -81,6 +81,9 @@
                 <li class="toctree-l3"><a href="#test">test</a></li>
                 
             
+                <li class="toctree-l3"><a href="#validate">validate</a></li>
+                
+            
             </ul>
         
     </li>
@@ -153,7 +156,8 @@
               
                 <h2 id="help">help</h2>
 <pre><code>NAME:
-   crash - test utility
+   crash - Run functional and performance tests, asserting and reporting on results.
+   For more detailed help, run: crash help &lt;command&gt;
 
 USAGE:
    crash [global options] command [command options] [arguments...]
@@ -161,21 +165,33 @@ USAGE:
 VERSION:
    0.0.4
 
+AUTHOR(S):
+   Troy Kinsella 
+
 COMMANDS:
-     test, t  Execute a test plan
-     help, h  Shows a list of commands or help for one command
+     test, t      Execute a Crashfile test plan
+     validate, v  Validate a Crashfile test plan without running it
+     help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --help, -h     show help
-   --version, -v  print the version
+   --help, -h  show help
+   -V          print the version
 </code></pre>
 
 <h2 id="test">test</h2>
 <pre><code>NAME:
-   crash test - Execute a test plan
+   crash test - Execute a Crashfile test plan
 
 USAGE:
    crash test [command options] [arguments...]
+
+DESCRIPTION:
+   A Crashfile to execute can be specified with the -f option,
+   or if omitted, crash searches the current directory for the first match, in order:
+     * Crashfile
+     * Crashfile.yml
+     * Crashfile.yaml
+
 
 OPTIONS:
    -j                 Format logging output as JSON
@@ -183,7 +199,18 @@ OPTIONS:
    -q                 Quiet mode; suppress logging
    -s FILE|KEY=VALUE  Set variable(s) FILE|KEY=VALUE
    -v                 Verbose logging; Use -vv or -vvv to increase verbosity
-   -f FILE            Input test yaml FILE; Defaults to searching for Crashfile.y[a]ml in the current directory
+   -f FILE            Crashfile test plan yaml FILE; Defaults to searching for Crashfile.y[a]ml in the current directory
+</code></pre>
+
+<h2 id="validate">validate</h2>
+<pre><code>NAME:
+   crash validate - Validate a Crashfile test plan without running it
+
+USAGE:
+   crash validate [command options] [arguments...]
+
+OPTIONS:
+   -f FILE  Crashfile test plan yaml FILE
 </code></pre>
               
             </div>
