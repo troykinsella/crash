@@ -1,21 +1,11 @@
 package runtime
 
-import (
-	"github.com/troykinsella/crash"
-)
-
 type PlanExec struct {
-	config *crash.PlanConfig
+	plan *Plan
 }
 
-func NewPlanExec(plan *crash.PlanConfig) *PlanExec {
+func NewPlanExec(plan *Plan) *PlanExec {
 	return &PlanExec{
-		config: plan,
+		plan: plan,
 	}
 }
-
-
-
-
-
-

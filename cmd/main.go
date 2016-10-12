@@ -13,6 +13,7 @@ const (
 func defCommands(app *cli.App) {
 	app.Commands = []cli.Command{
 		*newTestCommand(),
+		*newValidateCommand(),
 	}
 }
 
@@ -22,7 +23,9 @@ func newCliApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "crash"
 	app.Version = version
-	app.Usage = "test utility"
+	app.Usage = "Run functional and performance tests, asserting and reporting on results.\n" +
+	"   For more detailed help, run: " + app.Name + " help <command>"
+	app.Author = "Troy Kinsella"
 
 	defCommands(app)
 	defGlobalFlags(app)
@@ -31,6 +34,11 @@ func newCliApp() *cli.App {
 }
 
 func main() {
+	cli.VersionFlag = cli.BoolFlag{
+		Name: "V",
+		Usage: "print the version",
+	}
+
 	app := newCliApp()
 	err := app.Run(os.Args)
 	if err != nil {

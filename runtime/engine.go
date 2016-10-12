@@ -6,6 +6,7 @@ import (
 	"github.com/troykinsella/crash/action"
 	"github.com/troykinsella/crash/system"
 	"github.com/troykinsella/crash/logging"
+	"time"
 )
 
 type engine struct {
@@ -26,18 +27,18 @@ func newEngine(config *crash.Config, ctx *Context) (*engine, error) {
 	}, nil
 }
 
-func newRootStep(configs *crash.StepConfigs) *StepExec {
-	return NewStepExec(&crash.StepConfig{
-		Serial: configs,
+func newRootStep(s *Steps) *StepExec {
+	return NewStepExec(&Step{
+		Serial: s,
 	})
 }
 
-func (e *engine) Run(config *crash.Config) (bool, error) {
+func (e *engine) Run(tp *TestPlan) (bool, error) {
 
 	rok := true
 
-	for _, planConfig := range(*config.Plans) {
-		plan := NewPlanExec(&planConfig)
+	for _, plan := range(*tp.Plans) {
+		plan := NewPlanExec(&plan)
 		ok, err := e.runPlan(plan, e.rootCtx)
 		if err != nil {
 			return false, err
@@ -50,16 +51,16 @@ func (e *engine) Run(config *crash.Config) (bool, error) {
 
 func (e *engine) runPlan(plan *PlanExec, ctx *Context) (bool, error) {
 
-	ctx.log.Start(logging.PLAN, plan.config.Name)
+	ctx.log.Start(logging.PLAN, plan.plan.Name)
 
-	root := newRootStep(plan.config.Steps)
+	root := newRootStep(plan.plan.Steps)
 	root.Start()
 
 	result := <- e.runStep(root, ctx)
 
 	root.Finish()
 
-	ctx.log.Finish(logging.PLAN, root.RunDuration(), plan.config.Name)
+	ctx.log.Finish(logging.PLAN, root.RunDuration(), plan.plan.Name)
 
 	if result.Error != nil {
 		return false, result.Error
@@ -70,27 +71,33 @@ func (e *engine) runPlan(plan *PlanExec, ctx *Context) (bool, error) {
 
 func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
 	ch := make(chan *StepResult)
-	config := step.Config
+	s := step.Step
 
 	var ch2 chan *StepResult
 
 	ctx = ctx.NewChild()
 	step.Start()
 
-	if config.Run != nil {
+	if s.Run != nil {
 		ch2 = e.runAction(step, ctx)
-	} else if config.Serial != nil {
+	} else if s.Serial != nil {
 		ch2 = e.runSerial(step, ctx)
-	} else if config.Parallel != nil {
+	} else if s.Parallel != nil {
 		ch2 = e.runParallel(step, ctx)
 	}
 
 	go func() {
-		result := <- ch2
-		step.Finish()
-		ctx.Commit()
-
-		e.afterStep(step, ctx, result, ch)
+		select {
+		case result := <-ch2:
+			step.Finish()
+			ctx.Commit()
+			e.afterStep(step, ctx, result, ch)
+		case <-util.Timeout(1 * time.Millisecond):
+		    // TODO: better error
+			ch <- &StepResult{
+				Success: false,
+			}
+		}
 	}()
 
 	return ch
@@ -100,7 +107,7 @@ func (e *engine) afterStep(step *StepExec,
                            ctx *Context,
                            result *StepResult,
                            ch chan *StepResult) {
-	if step.Config.Checks != nil {
+	if step.Step.Checks != nil {
 		e.doChecks(step, ctx, result, ch)
 	} else {
 		ch <- result
@@ -111,18 +118,8 @@ func (e *engine) doChecks(step *StepExec,
                           ctx *Context,
                           result *StepResult,
                           ch chan *StepResult) {
-	checkSet, err := system.NewScriptSet(step.Config.Checks)
-	if err != nil {
-		ch <- &StepResult{
-			Success: false,
-			Error: err,
-		}
-		return
-	}
-
 	rok := true
-
-	for _, check := range checkSet {
+	for _, check := range *step.Step.Checks {
 		ok, _, msg, err := e.checkInterp.Statement(check, ctx.vars)
 		if err != nil {
 			ch <- &StepResult{
@@ -144,15 +141,15 @@ func (e *engine) doChecks(step *StepExec,
 func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
 
 	ch := make(chan *StepResult)
-	config := step.Config.Run
+	s := step.Step.Run
 
-	ctx.log.Start(logging.ACTION, config.Name)
+	ctx.log.Start(logging.ACTION, s.Name)
 
-	params := util.AsStringValues(config.Params)
+	params := util.AsStringValues(s.Params)
 	params = system.NewInterpolatedValues(params, ctx.vars)
 
 	a := action.NewAction(&action.ActionConfig{
-		Name:   config.Type,
+		Name:   s.Type,
 		Params: params,
 		Log: e.rootCtx.log,
 	})
@@ -173,7 +170,7 @@ func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
 			Error: err,
 		}
 
-		ctx.log.Finish(logging.ACTION, step.RunDuration(), config.Name, data)
+		ctx.log.Finish(logging.ACTION, step.RunDuration(), s.Name, data)
 	}()
 
 	return ch
@@ -185,13 +182,13 @@ func (e *engine) runSerial(step *StepExec, ctx *Context) (chan *StepResult) {
 	sw := util.NewStopWatch().Start()
 
 	ch := make(chan *StepResult)
-	configs := step.Config.Serial
+	s := step.Step.Serial
 
-	stepLen := len(*configs)
+	stepLen := len(*s)
 	results := make([]*StepResult, stepLen)
 
 	go func() {
-		for i, config := range *configs {
+		for i, config := range *s {
 			subStep := NewStepExec(&config)
 			subCh := e.runStep(subStep, ctx)
 			results[i] = <- subCh
@@ -210,11 +207,11 @@ func (e *engine) runParallel(step *StepExec, ctx *Context) (chan *StepResult) {
 	sw := util.NewStopWatch().Start()
 
 	ch := make(chan *StepResult)
-	configs := step.Config.Parallel
+	p := step.Step.Parallel
 
-	channels := make([]chan *StepResult, len(*configs))
+	channels := make([]chan *StepResult, len(*p))
 
-	for i, config := range *configs {
+	for i, config := range *p {
 		subStep := NewStepExec(&config)
 		channels[i] = e.runStep(subStep, ctx)
 	}

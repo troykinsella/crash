@@ -28,11 +28,16 @@ func (tr *TestRunner) createEngine() (*engine, error) {
 }
 
 func (tr *TestRunner) Run() (bool, error) {
+	tp, err := CompileTestPlan(tr.config)
+	if err != nil {
+		return false, err
+	}
+
 	engine, err := tr.createEngine()
 	if err != nil {
 		return false, err
 	}
 
-	return engine.Run(tr.config)
+	return engine.Run(tp)
 }
 

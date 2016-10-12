@@ -72,6 +72,7 @@ type StepConfig struct {
 	Always  *StepConfigs `yaml:"always,omitempty"`
 
 	Checks  []string     `yaml:"check,omitempty"`
+	Timeout string       `yaml:"timeout,omitempty"`
 }
 
 type StepConfigs []StepConfig

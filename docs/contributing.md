@@ -17,3 +17,11 @@ From your `GOPATH`:
 ```sh
 go test github.com/troykinsella/crash/...
 ```
+
+## Building the `crash` Executable
+
+From your `GOPATH`:
+
+```sh
+go build -o crash github.com/troykinsella/crash/cmd
+```

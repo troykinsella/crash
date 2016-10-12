@@ -2,13 +2,12 @@ package runtime
 
 import (
 	"time"
-	"github.com/troykinsella/crash"
 	"github.com/troykinsella/crash/util"
 )
 
 type StepExec struct {
 	stopWatch *util.StopWatch
-	Config *crash.StepConfig
+	Step *Step
 }
 
 type StepResult struct {
@@ -16,10 +15,10 @@ type StepResult struct {
 	Error error
 }
 
-func NewStepExec(config *crash.StepConfig) *StepExec {
+func NewStepExec(step *Step) *StepExec {
 	return &StepExec{
 		stopWatch: util.NewStopWatch(),
-		Config: config,
+		Step: step,
 	}
 }
 

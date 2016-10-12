@@ -23,8 +23,8 @@ func exists(f string) bool {
 	return true
 }
 
-func findCrashFile(options *crash.TestOptions) (string, error) {
-	if f := options.Crashfile; f != "" {
+func findCrashFile(f string) (string, error) {
+	if f != "" {
 		if !exists(f) {
 			return "", fmt.Errorf("test file not found: %s", f)
 		}
@@ -47,7 +47,7 @@ func findCrashFile(options *crash.TestOptions) (string, error) {
 }
 
 func (*Crash) Test(options *crash.TestOptions) (bool, error) {
-	cf, err:= findCrashFile(options)
+	cf, err:= findCrashFile(options.Crashfile)
 	if err != nil {
 		return false, err
 	}
@@ -69,4 +69,19 @@ func (*Crash) Test(options *crash.TestOptions) (bool, error) {
 	}
 
 	return ok, nil
+}
+
+func (*Crash) Validate(f string) error {
+	cf, err:= findCrashFile(f)
+	if err != nil {
+		return err
+	}
+
+	config := crash.NewConfig()
+	err = config.UnmarshalYAMLFile(cf)
+	if err != nil {
+		return err
+	}
+
+	return runtime.ValidateConfig(config)
 }

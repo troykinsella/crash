@@ -87,9 +87,14 @@ func newTestOptions(c *cli.Context) (*crash.TestOptions, error) {
 
 func newTestCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "test",
-		Aliases: []string{"t"},
-		Usage:   "Execute a test plan",
+		Name:        "test",
+		Aliases:     []string{"t"},
+		Usage:       "Execute a Crashfile test plan",
+		Description: "A Crashfile to execute can be specified with the -f option,\n" +
+		"   or if omitted, crash searches the current directory for the first match, in order:\n" +
+		"     * Crashfile\n" +
+		"     * Crashfile.yml\n" +
+		"     * Crashfile.yaml\n",
 		Action: func(c *cli.Context) error {
 			a := app.New()
 
@@ -139,7 +144,7 @@ func newTestCommand() *cli.Command {
 			},
 			cli.StringFlag{
 				Name:  testFile,
-				Usage: "Input test yaml `FILE`; Defaults to searching for Crashfile.y[a]ml in the current directory",
+				Usage: "Crashfile test plan yaml `FILE`; Defaults to searching for Crashfile.y[a]ml in the current directory",
 			},
 		},
 	}

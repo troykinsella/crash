@@ -7,3 +7,8 @@
 ```
 {{ shell "crash test -h" }}
 ```
+
+## validate
+```
+{{ shell "crash validate -h" }}
+```

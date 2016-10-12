@@ -32,8 +32,11 @@ func (o *OpAdapter) Exec(subjects []interface{}, args []interface{}) (bool, inte
 	return false, nil, nil
 }
 
-func NewScriptSet(expressions []string) (ScriptSet, error) {
-	scripts := make([]*Script, len(expressions))
+func NewScriptSet(expressions []string) (*ScriptSet, error) {
+	if expressions == nil {
+		return nil, nil
+	}
+	scripts := make(ScriptSet, len(expressions))
 	for i, e := range expressions {
 		ch, err := NewScript(e)
 		if err != nil {
@@ -41,7 +44,7 @@ func NewScriptSet(expressions []string) (ScriptSet, error) {
 		}
 		scripts[i] = ch
 	}
-	return scripts, nil
+	return &scripts, nil
 }
 
 func NewScript(script string) (*Script, error) {

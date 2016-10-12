@@ -1,6 +1,6 @@
 # Introduction
 
-Crashfiles tell `crash` what to do.
+Crashfiles, defined in YAML, tell `crash` what to do.  
 
 ---
 
