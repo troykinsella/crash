@@ -160,26 +160,55 @@ It works on Darwin, Linux, and Windows systems, with 64-bit architecture.</p>
 <h3 id="binary-distribution">Binary Distribution</h3>
 <p>Crash is distributed as a single OS-/Architecture-specific executable binary.</p>
 <p>Head over to <a href="https://github.com/troykinsella/crash/releases/">Releases</a> and download the appropriate 
-binary for your system. Then, move the binary to a convenient location:</p>
-<pre><code class="bash">$ sudo mv ~/Downloads/crash_[OS]_[Arch] /usr/local/bin/crash
-$ sudo chmod +x /usr/local/bin/crash
-</code></pre>
-
-<h3 id="building-from-source">Building from Source</h3>
-<p>Set up a <a href="https://golang.org/doc/code.html">Go workspace</a>.</p>
-<p>Get the sources:</p>
-<pre><code class="sh">$ go get github.com/troykinsella/crash
-</code></pre>
-
-<p>Install dependencies:</p>
-<pre><code class="sh">$ go get -d -v ./...
-</code></pre>
-
-<p>Build the binary:</p>
-<pre><code class="sh">$ go build -o crash -v github.com/troykinsella/crash/cmd
+binary for your system. Then, move the binary to a convenient location for execution.</p>
+<p>Or, run:</p>
+<pre><code class="bash">VERSION=0.0.3
+OS=linux # or darwin, or windows
+curl -SsL -o /usr/local/bin/crash https://github.com/troykinsella/crash/releases/download/v${VERSION}/crash_${OS}_amd64
+chmod +x /usr/local/bin/crash
 </code></pre>
 
 <h2 id="getting-started">Getting Started</h2>
+<h3 id="create-a-crashfile">Create a <code>Crashfile</code></h3>
+<pre><code class="yaml">---
+plans:
+- plan: Sooper Site
+  steps:
+  - run:
+      name: Home Page
+      type: http
+      params:
+        method: get
+        url: http://example.com
+    check:
+    - status-code in 200, 299 // http status ${status-code} is 2xx
+    - body contains '&lt;!doctype html&gt;' // has html5 doctype declaration
+    - headers.content-type eq 'text/html'
+</code></pre>
+
+<p>This <code>Crashfile</code> has a single plan which runs an action that performs an HTTP request.
+After a response is received, three assertions are performed against the response data, 
+specifically, <code>status-code</code>, <code>body</code>, and <code>headers</code>, which, among others, are created by <code>crash</code>'s
+<code>http</code> action.</p>
+<h3 id="run-crash-test">Run <code>crash test</code></h3>
+<p>In the same directory as your <code>Crashfile</code>, run <code>crash test</code>. For clarity's sake, let's
+add the <code>-vv</code> (add verbosity) option to get a little more logging output.</p>
+<pre><code class="bash">crash test -vv
+</code></pre>
+
+<p>... and examine the output:</p>
+<pre><code>[#] {0.000s} Sooper Site
+[-] {0.000s} serial...
+[!] {0.000s} Home Page
+[I] {0.000s} GET http://example.com
+[I] {0.024s} GET http://example.com -&gt; 200
+[!] {0.024s} (24.06554ms) Home Page
+[✓] http status 200 is 2xx
+[✓] has html5 doctype declaration
+[✓] headers.content-type eq 'text/html'
+[-] {0.024s} (24.182981ms) 
+[#] {0.024s} (24.202294ms) Sooper Site
+</code></pre>
               
             </div>
           </div>
@@ -229,5 +258,5 @@ $ sudo chmod +x /usr/local/bin/crash
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-10-12 03:24:48.282602
+Build Date UTC : 2016-10-14 23:40:36.957510
 -->

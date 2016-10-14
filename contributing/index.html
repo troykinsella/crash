@@ -107,10 +107,10 @@
                 <li class="toctree-l3"><a href="#reporting-an-issue">Reporting an Issue</a></li>
                 
             
-                <li class="toctree-l3"><a href="#runing-tests">Runing Tests</a></li>
+                <li class="toctree-l3"><a href="#building-the-crash-executable">Building the crash Executable</a></li>
                 
             
-                <li class="toctree-l3"><a href="#building-the-crash-executable">Building the crash Executable</a></li>
+                <li class="toctree-l3"><a href="#runing-tests">Runing Tests</a></li>
                 
             
             </ul>
@@ -164,14 +164,23 @@ detail as you can think of, including:</p>
 <li>Step-by-step instructions on how to reproduce the issue</li>
 <li>Stack traces and any other relevant output</li>
 </ul>
+<h2 id="building-the-crash-executable">Building the <code>crash</code> Executable</h2>
+<p>Set up a <a href="https://golang.org/doc/code.html">Go workspace</a>.</p>
+<p>From your <code>GOPATH</code>, get the sources:</p>
+<pre><code class="sh">$ go get github.com/troykinsella/crash
+</code></pre>
+
+<p>Install dependencies:</p>
+<pre><code class="sh">$ go get -d -v ./...
+</code></pre>
+
+<p>Build the binary:</p>
+<pre><code class="sh">$ go build -o crash -v github.com/troykinsella/crash/cmd
+</code></pre>
+
 <h2 id="runing-tests">Runing Tests</h2>
 <p>From your <code>GOPATH</code>:</p>
 <pre><code class="sh">go test github.com/troykinsella/crash/...
-</code></pre>
-
-<h2 id="building-the-crash-executable">Building the <code>crash</code> Executable</h2>
-<p>From your <code>GOPATH</code>:</p>
-<pre><code class="sh">go build -o crash github.com/troykinsella/crash/cmd
 </code></pre>
               
             </div>
