@@ -6,7 +6,6 @@ import (
 	"github.com/troykinsella/crash/action"
 	"github.com/troykinsella/crash/system"
 	"github.com/troykinsella/crash/logging"
-	"time"
 )
 
 type engine struct {
@@ -92,7 +91,7 @@ func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
 			step.Finish()
 			ctx.Commit()
 			e.afterStep(step, ctx, result, ch)
-		case <-util.Timeout(1 * time.Millisecond):
+		case <-util.Timeout(step.Step.Timeout):
 		    // TODO: better error
 			ch <- &StepResult{
 				Success: false,

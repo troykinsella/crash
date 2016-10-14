@@ -15,7 +15,7 @@ process_file() {
   mkdir -p $OUT/$parent
 
   if [[ "$file" == *md ]]; then
-    gucci $parent/$file > $OUT/$parent/$file
+    gucci $parent/$file > $OUT/$parent/$file || exit 2
   else
     cp $parent/$file $OUT/$parent/$file
   fi

@@ -5,6 +5,7 @@ go:
 #- 1.7
 - tip
 install:
+- apt install -y jq
 - pip install --user mkdocs
 - go get github.com/noqcks/gucci
 - go get github.com/mitchellh/gox

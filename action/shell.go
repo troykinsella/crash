@@ -38,8 +38,8 @@ func (s *Shell) Run() (*Result, error) {
 
 func (s *Shell) genResult(outBuf bytes.Buffer, errBuf bytes.Buffer) *Result {
 	data := make(map[string]interface{})
-	data["out"] = strings.Trim(outBuf.String(), " \r\n\t")
-	data["err"] = strings.Trim(errBuf.String(), " \r\n\t")
+	data["out"] = strings.TrimSpace(outBuf.String())
+	data["err"] = strings.TrimSpace(errBuf.String())
 
 	return &Result{
 		Data:    data,

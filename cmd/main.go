@@ -35,7 +35,7 @@ func newCliApp() *cli.App {
 
 func main() {
 	cli.VersionFlag = cli.BoolFlag{
-		Name: "V",
+		Name: "V, version",
 		Usage: "print the version",
 	}
 

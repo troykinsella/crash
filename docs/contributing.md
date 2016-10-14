@@ -10,18 +10,29 @@ detail as you can think of, including:
 * Step-by-step instructions on how to reproduce the issue
 * Stack traces and any other relevant output
 
+## Building the `crash` Executable
+
+Set up a [Go workspace](https://golang.org/doc/code.html).
+
+From your `GOPATH`, get the sources:
+```sh
+$ go get github.com/troykinsella/crash
+```
+
+Install dependencies:
+```sh
+$ go get -d -v ./...
+```
+
+Build the binary:
+```sh
+$ go build -o crash -v github.com/troykinsella/crash/cmd
+```
+
 ## Runing Tests
 
 From your `GOPATH`:
 
 ```sh
 go test github.com/troykinsella/crash/...
-```
-
-## Building the `crash` Executable
-
-From your `GOPATH`:
-
-```sh
-go build -o crash github.com/troykinsella/crash/cmd
 ```

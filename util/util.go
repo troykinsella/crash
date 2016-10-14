@@ -19,6 +19,10 @@ func PutAllForMapStringInterface(dest map[string]interface{}, source map[string]
 }
 
 func Timeout(d time.Duration) chan bool {
+	if d <= 0 {
+		return nil
+	}
+
 	t := make(chan bool, 1)
 	go func() {
 		time.Sleep(d)

@@ -42,6 +42,10 @@ func CompileTestPlan(config *crash.Config) (*TestPlan, error) {
 }
 
 func newPlan(config *crash.PlanConfig) (*Plan, error) {
+	if config.Steps == nil {
+		return nil, fmt.Errorf("Plan has no steps: %s", config.Name)
+	}
+
 	steps, err := newSteps(config.Steps)
 	if err != nil {
 		return nil, err
