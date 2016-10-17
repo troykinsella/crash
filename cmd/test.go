@@ -56,13 +56,13 @@ func logLevel(c *cli.Context) (logging.Level) {
 		return logging.L_OFF
 	}
 	if c.Bool(verbose1) {
-		return logging.L_INFO
+		return logging.L_DETAIL
 	}
 	if c.Bool(verbose2) {
-		return logging.L_DEBUG
+		return logging.L_INFO
 	}
 	if c.BoolT(verbose3) {
-		return logging.L_TRACE
+		return logging.L_DEBUG
 	}
 	return logging.L_DEFAULT
 }

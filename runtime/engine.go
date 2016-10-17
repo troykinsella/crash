@@ -61,7 +61,7 @@ func (e *engine) runPlan(plan *PlanExec, ctx *Context) (bool, error) {
 
 	root.Finish()
 
-	ctx.log.Finish(logging.PLAN, result.Ok, root.RunDuration(), plan.plan.Name)
+	ctx.log.Finish(logging.PLAN, result.Ok, root.RunDuration(), plan.plan.Name, nil)
 
 	if result.Error != nil {
 		return false, result.Error

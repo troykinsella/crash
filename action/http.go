@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"github.com/troykinsella/crash/logging"
 	"strconv"
 	"fmt"
 )
@@ -28,7 +27,7 @@ func (h *Http) Run() (*Result, error) {
 
 	client := &http.Client{}
 
-	h.config.Log.Start(logging.INFO, method + " " + url)
+	h.config.Log.Debug(method + " " + url)
 
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
@@ -54,10 +53,7 @@ func (h *Http) genResult(resp *http.Response) (*Result, error) {
 	data["status-code"] = resp.StatusCode
 	data["headers"] = resp.Header
 
-	h.config.Log.Finish(logging.INFO,
-		true,
-		0,
-		resp.Request.Method + " " + resp.Request.URL.String() + " -> " + strconv.FormatInt(int64(resp.StatusCode), 10))
+	h.config.Log.Info(resp.Request.Method + " " + resp.Request.URL.String() + " -> " + strconv.FormatInt(int64(resp.StatusCode), 10))
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

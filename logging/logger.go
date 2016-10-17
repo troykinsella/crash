@@ -21,15 +21,14 @@ const (
 	CHECK
 	INFO
 	DEBUG
-	TRACE
 )
 
 const (
 	L_OFF Level = iota
 	L_DEFAULT
+	L_DETAIL
 	L_INFO
 	L_DEBUG
-	L_TRACE
 )
 
 type Logger struct {
@@ -50,74 +49,83 @@ func NewLogger(level Level,
 	}
 }
 
-func (l *Logger) Start(t MessageType, msg string, args ...interface{}) {
-	l.log(t, -1, true, nil, msg, args)
+func (l *Logger) Start(t MessageType, msg string) {
+	l.log(t, -1, nil, nil, msg, nil)
 }
 
-func (l *Logger) Finish(t MessageType, ok bool, d time.Duration, msg string, args ...interface{}) {
-	l.log(t, d, ok, nil, msg, args)
+func (l *Logger) Finish(t MessageType, ok bool, d time.Duration, msg string, data interface{}) {
+	l.log(t, d, util.BoolFor(ok), nil, msg, data)
 }
 
 func (l *Logger) Error(t MessageType, d time.Duration, err error, msg string) {
-	l.log(t, d, false, err, msg)
+	l.log(t, d, util.False, err, msg, nil)
 }
 
-func (l *Logger) Info(msg string, args ...interface{}) {
-	l.logf(INFO, msg, args)
+func (l *Logger) Info(msg string) {
+	l.log(INFO, -1, nil, nil, msg, nil)
 }
 
-func (l *Logger) Debug(msg string, args ...interface{}) {
-	l.logf(DEBUG, msg, args)
+func (l *Logger) Debug(msg string) {
+	l.log(DEBUG, -1, nil, nil, msg, nil)
 }
 
-func (l *Logger) Trace(msg string, args ...interface{}) {
-	l.logf(TRACE, msg, args)
-}
-
-func (l *Logger) logf(t MessageType, str string, args ...interface{}) {
-	l.log(t, -1, true, nil, fmt.Sprintf(str, args))
+func (l *Logger) Check(ok bool, msg string, data map[string]interface{}) {
+	l.log(CHECK, -1, util.BoolFor(ok), nil, msg, data)
 }
 
 func (l *Logger) enabled(level Level) bool {
 	return l.level >= level
 }
 
-func (l *Logger) levelForMessage(t MessageType) Level {
+func (l *Logger) levelForMessage(t MessageType, ok *util.Bool) Level {
+	start := ok == nil
+
 	switch t {
-	case PLAN, ACTION: return L_DEFAULT
-	case SERIAL, PARALLEL, INFO: return L_INFO
-	case CHECK, DEBUG: return L_DEBUG
-	case TRACE: return L_TRACE
-	default: return L_OFF
+	case PLAN, ACTION:
+		if start {
+			return L_DETAIL
+		}
+		return L_DEFAULT
+	case CHECK:
+		if ok.Value() {
+			return L_DETAIL
+		}
+		return L_DEFAULT
+	case SERIAL, PARALLEL, INFO:
+		return L_INFO
+	case DEBUG:
+		return L_DEBUG
+	default:
+		return L_OFF
 	}
 }
 
 func (l *Logger) log(t MessageType,
-                     d time.Duration,
-                     ok bool,
-                     err error,
-                     msg string,
-                     args ...interface{}) {
+					 d time.Duration,
+					 ok *util.Bool,
+					 err error,
+					 msg string,
+					 data interface{}) {
 	if l.level == L_OFF {
 		return
 	}
-	if !l.enabled(l.levelForMessage(t)) {
+	if !l.enabled(l.levelForMessage(t, ok)) {
 		return
 	}
 
 	if l.json {
-		l.logJSON(t, d, ok, err, msg, args...)
+		l.logJSON(t, d, ok, err, msg, data)
 	} else {
-		l.logHuman(t, d, ok, err, msg, args...)
+		l.logHuman(t, d, ok, err, msg)
 	}
 }
 
 func (l *Logger) logJSON(t MessageType,
 						 d time.Duration,
-						 ok bool,
+						 ok *util.Bool,
 						 err error,
 						 msg string,
-						 args ...interface{}) {
+						 data interface{}) {
 	var typeStr string
 	switch t {
 	case ACTION:
@@ -136,38 +144,37 @@ func (l *Logger) logJSON(t MessageType,
 		typeStr = "debug"
 	}
 
-	data := map[string]interface{}{
+	m := map[string]interface{}{
 		"type": typeStr,
 		"timestamp": time.Now().UTC().Format(jsISODateFormat),
 		"message": msg,
 	}
 
 	if l.enabled(L_DEBUG) && t == ACTION {
-		data["result"] = args[0]
+		m["result"] = data
 	}
 
-	if t == CHECK {
-		data["pass"] = ok
+	if t == CHECK && ok != nil {
+		m["pass"] = ok.Value()
 	}
 
 	if err != nil {
-		data["error"] = err.Error()
+		m["error"] = err.Error()
 	}
 
 	if d > 0 {
-		data["duration"] = l.sw.Since()
+		m["duration"] = l.sw.Since()
 	}
 
-	out, _ := json.Marshal(data)
+	out, _ := json.Marshal(m)
 	fmt.Printf("%s\n", out)
 }
 
 func (l *Logger) logHuman(t MessageType,
 						  d time.Duration,
-						  ok bool,
+						  ok *util.Bool,
 						  err error,
-						  msg string,
-						  args ...interface{}) {
+						  msg string) {
 	var typeStr string
 	switch t {
 	case ACTION:
@@ -197,24 +204,26 @@ func (l *Logger) logHuman(t MessageType,
 		typeStr = "D"
 	}
 
-	okStr := ""
-	if l.colorize {
-		if ok {
-			okStr = "\033[32m✓\033[0m"
+	okStr := "."
+	if ok != nil {
+		if l.colorize {
+			if ok.Value() {
+				okStr = "\033[32m✓\033[0m"
+			} else {
+				okStr = "\033[31m✗\033[0m"
+			}
 		} else {
-			okStr = "\033[31m✗\033[0m"
-		}
-	} else {
-		if ok {
-			okStr = "✓"
-		} else {
-			okStr = "✗"
+			if ok.Value() {
+				okStr = "✓"
+			} else {
+				okStr = "✗"
+			}
 		}
 	}
 
 	nowStr := ""
 	if t != CHECK {
-		nowStr = fmt.Sprintf(" %.3fs", l.sw.Since().Seconds())
+		nowStr = fmt.Sprintf(" %.1fs", l.sw.Since().Seconds())
 	}
 
 	durStr := ""
@@ -229,6 +238,3 @@ func (l *Logger) logHuman(t MessageType,
 	fmt.Printf("%s %s%s%s %s\n", typeStr, okStr, nowStr, durStr, msg)
 }
 
-func (l *Logger) Check(ok bool, msg string, data map[string]interface{}) {
-	l.log(CHECK, -1, ok, nil, msg, data)
-}
