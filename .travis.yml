@@ -15,10 +15,6 @@ script:
 - ./.gen-docs.sh
 - sha256sum crash_* > sha256sum.txt
 after_success:
-- echo $PWD
-- echo $PATH
-- ls -altR
-- which crash
 - ./.publish-docs.sh
 deploy:
   provider: releases
