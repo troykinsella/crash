@@ -11,6 +11,14 @@
 
     
     <url>
+     <loc>None/test_results/</loc>
+     <lastmod>2016-10-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
      <loc>None/crashfile_reference/</loc>
      <lastmod>2016-10-17</lastmod>
      <changefreq>daily</changefreq>

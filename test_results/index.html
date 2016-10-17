@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Troy Kinsella">
+  
+  <title>Test Results - Crash Documentation</title>
+  
+
+  <link rel="shortcut icon" href="../favicon.ico">
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Test Results";
+    var mkdocs_page_input_path = "test_results.md";
+    var mkdocs_page_url = "/test_results/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Crash Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Test Results</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#introduction">Introduction</a></li>
+                
+                    <li><a class="toctree-l4" href="#logging-levels">Logging Levels</a></li>
+                
+                    <li><a class="toctree-l4" href="#output-for-humans">Output for Humans</a></li>
+                
+                    <li><a class="toctree-l4" href="#output-for-machines">Output for Machines</a></li>
+                
+            
+            </ul>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../crashfile_reference/">Crashfile Reference</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../commands/">Commands</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Actions</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../actions/http/">http</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../actions/shell/">shell</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../contributing/">Contributing</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Crash Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Test Results</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="https://github.com/troykinsella/crash" class="icon icon-github"> Edit on GitHub</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="introduction">Introduction</h1>
+<p>Running <code>crash test</code> produces output that details the passing and failing elements of
+the test plan execution.</p>
+<h2 id="logging-levels">Logging Levels</h2>
+<p>Output verbosity is controlled by the <code>-v</code> option, passed to <code>crash test</code>. Messages
+are printed with further verbosity by supplying <code>-vv</code>, and further still with <code>-vvv</code>.
+Additionally, passing <code>-q</code> (quiet) turns off logging output altogether.</p>
+<p>The verbosity options correlate to logging level as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Logging Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-q</code></td>
+<td><code>OFF</code></td>
+</tr>
+<tr>
+<td>(Neither <code>-q</code> nor <code>-v</code>)</td>
+<td><code>DEFAULT</code></td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td><code>DETAIL</code></td>
+</tr>
+<tr>
+<td><code>-vv</code></td>
+<td><code>INFO</code></td>
+</tr>
+<tr>
+<td><code>-vvv</code></td>
+<td><code>DEBUG</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="output-for-humans">Output for Humans</h2>
+<p>Crash events are printed according to this format:</p>
+<pre><code>&lt;message-type&gt; &lt;success&gt; [elapsed-time] [step-duration] &lt;message&gt;
+</code></pre>
+
+<p>The presence of <code>elapsed-time</code> and <code>step-duration</code> columns are optional, and are 
+predictable based on the <code>message-type</code>.</p>
+<h3 id="first-column-message-type">First Column: Message Type</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>When</th>
+<th>Level</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#</td>
+<td>Start</td>
+<td><code>DETAIL</code></td>
+<td>Plan execution started</td>
+</tr>
+<tr>
+<td>#</td>
+<td>Finish</td>
+<td><code>DEFAULT</code></td>
+<td>Plan execution finished</td>
+</tr>
+<tr>
+<td>-</td>
+<td>Start</td>
+<td><code>INFO</code></td>
+<td>Serial execution started</td>
+</tr>
+<tr>
+<td>-</td>
+<td>Finish</td>
+<td><code>INFO</code></td>
+<td>Serial execution finished</td>
+</tr>
+<tr>
+<td>=</td>
+<td>Start</td>
+<td><code>INFO</code></td>
+<td>Parallel execution started</td>
+</tr>
+<tr>
+<td>=</td>
+<td>Finish</td>
+<td><code>INFO</code></td>
+<td>Parallel execution finished</td>
+</tr>
+<tr>
+<td>!</td>
+<td>Start</td>
+<td><code>DETAIL</code></td>
+<td>Action execution started</td>
+</tr>
+<tr>
+<td>!</td>
+<td>Finish</td>
+<td><code>DEFAULT</code></td>
+<td>Action execution finished</td>
+</tr>
+<tr>
+<td>?</td>
+<td>Occurrence</td>
+<td><code>DETAIL</code> when pass, <code>DEFAULT</code> when fail</td>
+<td>Check, a.k.a. assertion</td>
+</tr>
+<tr>
+<td>I</td>
+<td>Occurrence</td>
+<td><code>INFO</code></td>
+<td>Info log message</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Occurrence</td>
+<td><code>DEBUG</code></td>
+<td>Debug log message</td>
+</tr>
+</tbody>
+</table>
+<h3 id="second-column-success">Second Column: Success</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>Success is not relevant to the message</td>
+</tr>
+<tr>
+<td>✓</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>✗</td>
+<td>Failure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="elapsed-time">Elapsed Time</h3>
+<p>Reports the time elapsed in seconds since the beginning of the <code>crash test</code> execution. Not present for checks
+(when the message type symbol is <code>?</code>).</p>
+<h3 id="step-duration">Step Duration</h3>
+<p>Shows the time elapsed upon completion of a step, since the beginning of the step, 
+as a string in the form "3m0.5s". Durations less than one second use a smaller unit 
+(milli-, micro-, or nanoseconds).</p>
+<h3 id="message">Message</h3>
+<p>The meat and potatoes of the logged event.</p>
+<h2 id="output-for-machines">Output for Machines</h2>
+<p>TODO</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../crashfile_reference/" class="btn btn-neutral float-right" title="Crashfile Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright © 2016 Troy Kinsella</p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/troykinsella/crash" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../crashfile_reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

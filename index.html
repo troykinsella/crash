@@ -75,6 +75,13 @@
           
             <li>
     <li class="toctree-l1 ">
+        <a class="" href="test_results/">Test Results</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
         <a class="" href="crashfile_reference/">Crashfile Reference</a>
         
     </li>
@@ -197,17 +204,16 @@ add the <code>-vv</code> (add verbosity) option to get a little more logging out
 </code></pre>
 
 <p>... and examine the output:</p>
-<pre><code># ✓ 0.000s Sooper Site
-- ✓ 0.000s serial
-! ✓ 0.000s Home Page
-I ✓ 0.000s GET http://example.com
-I ✓ 0.025s GET http://example.com -&gt; 200
-! ✓ 0.025s (24.772978ms) Home Page
+<pre><code># . 0.0s Sooper Site
+- . 0.0s serial
+! . 0.0s Home Page
+I . 0.0s GET http://example.com -&gt; 200
+! ✓ 0.0s (24.187869ms) Home Page
 ? ✓ http status 200 is 2xx
 ? ✓ has html5 doctype declaration
 ? ✓ headers.content-type eq 'text/html'
-- ✓ 0.025s (24.946976ms) serial
-# ✓ 0.025s (24.972594ms) Sooper Site
+- ✓ 0.0s (24.385689ms) serial
+# ✓ 0.0s (24.415649ms) Sooper Site
 </code></pre>
               
             </div>
@@ -216,7 +222,7 @@ I ✓ 0.025s GET http://example.com -&gt; 200
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="crashfile_reference/" class="btn btn-neutral float-right" title="Crashfile Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="test_results/" class="btn btn-neutral float-right" title="Test Results">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
     </div>
@@ -248,7 +254,7 @@ I ✓ 0.025s GET http://example.com -&gt; 200
       
       
       
-        <span style="margin-left: 15px"><a href="crashfile_reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="test_results/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
@@ -258,5 +264,5 @@ I ✓ 0.025s GET http://example.com -&gt; 200
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-10-17 02:04:24.164199
+Build Date UTC : 2016-10-17 23:31:20.006609
 -->
