@@ -6,6 +6,8 @@ import (
 	"github.com/troykinsella/crash/action"
 	"github.com/troykinsella/crash/system"
 	"github.com/troykinsella/crash/logging"
+	"fmt"
+	"errors"
 )
 
 type engine struct {
@@ -59,29 +61,46 @@ func (e *engine) runPlan(plan *PlanExec, ctx *Context) (bool, error) {
 
 	root.Finish()
 
-	ctx.log.Finish(logging.PLAN, root.RunDuration(), plan.plan.Name)
+	ctx.log.Finish(logging.PLAN, result.Ok, root.RunDuration(), plan.plan.Name)
 
 	if result.Error != nil {
 		return false, result.Error
 	}
 
-	return result.Success, nil
+	return result.Ok, nil
+}
+
+func (e *engine) selectStep(step *StepExec, ctx *Context) (logging.MessageType, string) {
+	s := step.Step
+	switch {
+	case s.Run != nil:
+		return logging.ACTION, s.Run.Name
+	case s.Serial != nil:
+		return logging.SERIAL, "serial"
+	case s.Parallel != nil:
+		return logging.PARALLEL, "parallel"
+	default:
+		panic(errors.New("internal error"))
+	}
 }
 
 func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
 	ch := make(chan *StepResult)
 	s := step.Step
 
+	mt, stepName := e.selectStep(step, ctx)
 	var ch2 chan *StepResult
 
 	ctx = ctx.NewChild()
+	ctx.log.Start(mt, stepName)
 	step.Start()
 
-	if s.Run != nil {
+	switch {
+	case s.Run != nil:
 		ch2 = e.runAction(step, ctx)
-	} else if s.Serial != nil {
+	case s.Serial != nil:
 		ch2 = e.runSerial(step, ctx)
-	} else if s.Parallel != nil {
+	case s.Parallel != nil:
 		ch2 = e.runParallel(step, ctx)
 	}
 
@@ -90,11 +109,13 @@ func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
 		case result := <-ch2:
 			step.Finish()
 			ctx.Commit()
+			ctx.log.Finish(mt, result.Ok, step.RunDuration(), stepName, result.Data)
 			e.afterStep(step, ctx, result, ch)
+
 		case <-util.Timeout(step.Step.Timeout):
-		    // TODO: better error
+		    ctx.log.Error(mt, step.Step.Timeout, fmt.Errorf("timed out"), stepName)
 			ch <- &StepResult{
-				Success: false,
+				Ok: false,
 			}
 		}
 	}()
@@ -122,7 +143,7 @@ func (e *engine) doChecks(step *StepExec,
 		ok, _, msg, err := e.checkInterp.Statement(check, ctx.vars)
 		if err != nil {
 			ch <- &StepResult{
-				Success: false,
+				Ok: false,
 				Error: err,
 			}
 			return
@@ -133,16 +154,13 @@ func (e *engine) doChecks(step *StepExec,
 		rok = rok && ok
 	}
 
-	result.Success = rok
+	result.Ok = rok
 	ch <- result
 }
 
 func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
-
 	ch := make(chan *StepResult)
 	s := step.Step.Run
-
-	ctx.log.Start(logging.ACTION, s.Name)
 
 	params := util.AsStringValues(s.Params)
 	params = system.NewInterpolatedValues(params, ctx.vars)
@@ -165,21 +183,16 @@ func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
 		}
 
 		ch <- &StepResult{
-			Success: success,
+			Ok: success,
+			Data: data,
 			Error: err,
 		}
-
-		ctx.log.Finish(logging.ACTION, step.RunDuration(), s.Name, data)
 	}()
 
 	return ch
 }
 
 func (e *engine) runSerial(step *StepExec, ctx *Context) (chan *StepResult) {
-
-	ctx.log.Start(logging.SERIAL, "serial...")
-	sw := util.NewStopWatch().Start()
-
 	ch := make(chan *StepResult)
 	s := step.Step.Serial
 
@@ -194,17 +207,12 @@ func (e *engine) runSerial(step *StepExec, ctx *Context) (chan *StepResult) {
 		}
 
 		ch <- aggregateResults(results)
-
-		ctx.log.Finish(logging.SERIAL, sw.Stop().Time(), "")
 	}()
 
 	return ch
 }
 
 func (e *engine) runParallel(step *StepExec, ctx *Context) (chan *StepResult) {
-	ctx.log.Start(logging.PARALLEL, "parallel...")
-	sw := util.NewStopWatch().Start()
-
 	ch := make(chan *StepResult)
 	p := step.Step.Parallel
 
@@ -222,8 +230,6 @@ func (e *engine) runParallel(step *StepExec, ctx *Context) (chan *StepResult) {
 		}
 
 		ch <- aggregateResults(results)
-
-		ctx.log.Finish(logging.PARALLEL, sw.Stop().Time(), "")
 	}()
 
 	return ch
@@ -232,12 +238,12 @@ func (e *engine) runParallel(step *StepExec, ctx *Context) (chan *StepResult) {
 func aggregateResults(results []*StepResult) *StepResult {
 	result := true
 	for _, r := range results {
-		if !r.Success {
+		if !r.Ok {
 			result = false
 			break
 		}
 	}
 	return &StepResult{
-		Success: result,
+		Ok: result,
 	}
 }

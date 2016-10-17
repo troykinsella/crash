@@ -11,7 +11,8 @@ type StepExec struct {
 }
 
 type StepResult struct {
-	Success bool
+	Ok    bool
+	Data  map[string]interface{}
 	Error error
 }
 

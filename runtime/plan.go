@@ -69,11 +69,20 @@ func newSteps(configs *crash.StepConfigs) (*Steps, error) {
 	return &steps, nil
 }
 
-func parseDuration(s string) (time.Duration, error) {
+func parseTimeout(s string) (time.Duration, error) {
 	if s == "" {
 		return -1, nil
 	}
-	return time.ParseDuration(s)
+
+	d, err := time.ParseDuration(s)
+	if err != nil {
+		return -1, err
+	}
+	if d <= 0 {
+		return -1, fmt.Errorf("timeout must be greater than zero: %s", s)
+	}
+
+	return d, nil
 }
 
 func newStep(config *crash.StepConfig) (*Step, error) {
@@ -82,7 +91,7 @@ func newStep(config *crash.StepConfig) (*Step, error) {
 		return nil, err
 	}
 
-	to, err := parseDuration(config.Timeout)
+	to, err := parseTimeout(config.Timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +132,7 @@ func newStep(config *crash.StepConfig) (*Step, error) {
 		}, nil
 	}
 
-	return nil, fmt.Errorf("wtf")
+	return nil, errors.New("internal error")
 }
 
 func newActionStep(config *crash.ActionConfig) (*ActionStep, error) {

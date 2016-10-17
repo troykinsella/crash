@@ -9,7 +9,8 @@ A command-line tool for executing test plans and reporting results. Test plans, 
 direct the execution of actions, such as HTTP requests, checks, such as asserting an HTTP
 response code of 200, repetitions, and concurrency.
 
-Crash is currently in alpha development, and pretty much everything is subject to change.
+Crash is currently in alpha development, and pretty much everything is subject to change. It is not
+yet suitable for production use until 1.0 is released.
 
 ## Documentation
 

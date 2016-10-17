@@ -6,6 +6,10 @@ Crashfiles, defined in YAML, tell `crash` what to do.
 
 ## The Crashfile
 
+A note on examples: When you see `# ...` it denotes that the example is just a snippet
+of a larger document, which, by itself, is not valid. The context in which the snippet
+must live is made clear by the accompanied documentation.
+
 ### Plans
 
 Defined at the root of the test plan document, `plans` is a list of plan objects, 
@@ -38,6 +42,7 @@ Any kind of step object may have the following properties:
 Properties | Required | Description
 ---------- | -------- | -----------
 check      | no       | A list of assertions to perform after the execution of the step is complete.
+timeout    | no       | A time duration after which the step is aborted and is considered to have failed. A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "1.5s" or "2s300ms". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". Zero or negative timeouts are not permitted.
 
 ### Vars
 
@@ -49,6 +54,7 @@ at execution time.
 vars:
   key: value
   foo: bar
+# ...
 ```
 
 ## Plan Steps

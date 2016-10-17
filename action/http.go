@@ -55,6 +55,7 @@ func (h *Http) genResult(resp *http.Response) (*Result, error) {
 	data["headers"] = resp.Header
 
 	h.config.Log.Finish(logging.INFO,
+		true,
 		0,
 		resp.Request.Method + " " + resp.Request.URL.String() + " -> " + strconv.FormatInt(int64(resp.StatusCode), 10))
 

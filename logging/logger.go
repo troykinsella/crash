@@ -51,11 +51,15 @@ func NewLogger(level Level,
 }
 
 func (l *Logger) Start(t MessageType, msg string, args ...interface{}) {
-	l.log(t, -1, true, msg, args)
+	l.log(t, -1, true, nil, msg, args)
 }
 
-func (l *Logger) Finish(t MessageType, d time.Duration, msg string, args ...interface{}) {
-	l.log(t, d, true, msg, args)
+func (l *Logger) Finish(t MessageType, ok bool, d time.Duration, msg string, args ...interface{}) {
+	l.log(t, d, ok, nil, msg, args)
+}
+
+func (l *Logger) Error(t MessageType, d time.Duration, err error, msg string) {
+	l.log(t, d, false, err, msg)
 }
 
 func (l *Logger) Info(msg string, args ...interface{}) {
@@ -71,7 +75,7 @@ func (l *Logger) Trace(msg string, args ...interface{}) {
 }
 
 func (l *Logger) logf(t MessageType, str string, args ...interface{}) {
-	l.log(t, -1, true, fmt.Sprintf(str, args))
+	l.log(t, -1, true, nil, fmt.Sprintf(str, args))
 }
 
 func (l *Logger) enabled(level Level) bool {
@@ -91,6 +95,7 @@ func (l *Logger) levelForMessage(t MessageType) Level {
 func (l *Logger) log(t MessageType,
                      d time.Duration,
                      ok bool,
+                     err error,
                      msg string,
                      args ...interface{}) {
 	if l.level == L_OFF {
@@ -101,15 +106,16 @@ func (l *Logger) log(t MessageType,
 	}
 
 	if l.json {
-		l.logJSON(t, d, ok, msg, args...)
+		l.logJSON(t, d, ok, err, msg, args...)
 	} else {
-		l.logHuman(t, d, ok, msg, args...)
+		l.logHuman(t, d, ok, err, msg, args...)
 	}
 }
 
 func (l *Logger) logJSON(t MessageType,
 						 d time.Duration,
 						 ok bool,
+						 err error,
 						 msg string,
 						 args ...interface{}) {
 	var typeStr string
@@ -144,6 +150,10 @@ func (l *Logger) logJSON(t MessageType,
 		data["pass"] = ok
 	}
 
+	if err != nil {
+		data["error"] = err.Error()
+	}
+
 	if d > 0 {
 		data["duration"] = l.sw.Since()
 	}
@@ -155,6 +165,7 @@ func (l *Logger) logJSON(t MessageType,
 func (l *Logger) logHuman(t MessageType,
 						  d time.Duration,
 						  ok bool,
+						  err error,
 						  msg string,
 						  args ...interface{}) {
 	var typeStr string
@@ -167,17 +178,9 @@ func (l *Logger) logHuman(t MessageType,
 		}
 	case CHECK:
 		if l.colorize {
-			if ok {
-				typeStr = "\033[32m✓\033[0m"
-			} else {
-				typeStr = "\033[31m✗\033[0m"
-			}
+			typeStr = "\033[35m?\033[0m"
 		} else {
-			if ok {
-				typeStr = "✓"
-			} else {
-				typeStr = "✗"
-			}
+			typeStr = "?"
 		}
 	case PLAN:
 		if l.colorize {
@@ -194,9 +197,24 @@ func (l *Logger) logHuman(t MessageType,
 		typeStr = "D"
 	}
 
+	okStr := ""
+	if l.colorize {
+		if ok {
+			okStr = "\033[32m✓\033[0m"
+		} else {
+			okStr = "\033[31m✗\033[0m"
+		}
+	} else {
+		if ok {
+			okStr = "✓"
+		} else {
+			okStr = "✗"
+		}
+	}
+
 	nowStr := ""
 	if t != CHECK {
-		nowStr = fmt.Sprintf(" {%.3fs}", l.sw.Since().Seconds())
+		nowStr = fmt.Sprintf(" %.3fs", l.sw.Since().Seconds())
 	}
 
 	durStr := ""
@@ -204,9 +222,13 @@ func (l *Logger) logHuman(t MessageType,
 		durStr = fmt.Sprintf(" (%s)", d.String())
 	}
 
-	fmt.Printf("[%s]%s%s %s\n", typeStr, nowStr, durStr, msg)
+	if err != nil {
+		msg = fmt.Sprintf("%s: %s", msg, err.Error())
+	}
+
+	fmt.Printf("%s %s%s%s %s\n", typeStr, okStr, nowStr, durStr, msg)
 }
 
 func (l *Logger) Check(ok bool, msg string, data map[string]interface{}) {
-	l.log(CHECK, -1, ok, msg, data)
+	l.log(CHECK, -1, ok, nil, msg, data)
 }
