@@ -197,17 +197,17 @@ add the <code>-vv</code> (add verbosity) option to get a little more logging out
 </code></pre>
 
 <p>... and examine the output:</p>
-<pre><code>[#] {0.000s} Sooper Site
-[-] {0.000s} serial...
-[!] {0.000s} Home Page
-[I] {0.000s} GET http://example.com
-[I] {0.024s} GET http://example.com -&gt; 200
-[!] {0.024s} (24.06554ms) Home Page
-[✓] http status 200 is 2xx
-[✓] has html5 doctype declaration
-[✓] headers.content-type eq 'text/html'
-[-] {0.024s} (24.182981ms) 
-[#] {0.024s} (24.202294ms) Sooper Site
+<pre><code># ✓ 0.000s Sooper Site
+- ✓ 0.000s serial
+! ✓ 0.000s Home Page
+I ✓ 0.000s GET http://example.com
+I ✓ 0.024s GET http://example.com -&gt; 200
+! ✓ 0.025s (24.399132ms) Home Page
+? ✓ http status 200 is 2xx
+? ✓ has html5 doctype declaration
+? ✓ headers.content-type eq 'text/html'
+- ✓ 0.025s (24.582992ms) serial
+# ✓ 0.025s (24.606412ms) Sooper Site
 </code></pre>
               
             </div>
@@ -258,5 +258,5 @@ add the <code>-vv</code> (add verbosity) option to get a little more logging out
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-10-14 23:40:36.957510
+Build Date UTC : 2016-10-17 01:43:19.206347
 -->

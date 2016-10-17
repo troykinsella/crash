@@ -158,6 +158,9 @@
 <p>Crashfiles, defined in YAML, tell <code>crash</code> what to do.  </p>
 <hr />
 <h2 id="the-crashfile">The Crashfile</h2>
+<p>A note on examples: When you see <code># ...</code> it denotes that the example is just a snippet
+of a larger document, which, by itself, is not valid. The context in which the snippet
+must live is made clear by the accompanied documentation.</p>
 <h3 id="plans">Plans</h3>
 <p>Defined at the root of the test plan document, <code>plans</code> is a list of plan objects, 
 and every test plan document must define it. Plans are executed in the order defined, 
@@ -210,6 +213,11 @@ Any kind of step object may have the following properties:</p>
 <td>no</td>
 <td>A list of assertions to perform after the execution of the step is complete.</td>
 </tr>
+<tr>
+<td>timeout</td>
+<td>no</td>
+<td>A time duration after which the step is aborted and is considered to have failed. A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "1.5s" or "2s300ms". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". Zero or negative timeouts are not permitted.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="vars">Vars</h3>
@@ -219,6 +227,7 @@ at execution time.</p>
 vars:
   key: value
   foo: bar
+# ...
 </code></pre>
 
 <h2 id="plan-steps">Plan Steps</h2>
