@@ -169,7 +169,7 @@ It works on Darwin, Linux, and Windows systems, with 64-bit architecture.</p>
 <p>Head over to <a href="https://github.com/troykinsella/crash/releases/">Releases</a> and download the appropriate 
 binary for your system. Then, move the binary to a convenient location for execution.</p>
 <p>Or, run:</p>
-<pre><code class="bash">VERSION=0.0.4
+<pre><code class="bash">VERSION=0.0.5
 OS=linux # or darwin, or windows
 curl -SsL -o /usr/local/bin/crash https://github.com/troykinsella/crash/releases/download/v${VERSION}/crash_${OS}_amd64
 chmod +x /usr/local/bin/crash
@@ -208,12 +208,12 @@ add the <code>-vv</code> (add verbosity) option to get a little more logging out
 - . 0.0s serial
 ! . 0.0s Home Page
 I . 0.0s GET http://example.com -&gt; 200
-! ✓ 0.0s (24.187869ms) Home Page
+! ✓ 0.0s (24.493644ms) Home Page
 ? ✓ http status 200 is 2xx
 ? ✓ has html5 doctype declaration
 ? ✓ headers.content-type eq 'text/html'
-- ✓ 0.0s (24.385689ms) serial
-# ✓ 0.0s (24.415649ms) Sooper Site
+- ✓ 0.0s (24.699688ms) serial
+# ✓ 0.0s (24.725096ms) Sooper Site
 </code></pre>
               
             </div>
@@ -264,5 +264,5 @@ I . 0.0s GET http://example.com -&gt; 200
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-10-17 23:31:20.006609
+Build Date UTC : 2016-10-18 00:52:15.333519
 -->
