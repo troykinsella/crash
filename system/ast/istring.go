@@ -11,24 +11,37 @@ import (
 type IString struct {
 	Str string
 	Expr *Expression
+	Ident *Identifier
 	Next *IString
 }
 
 func (ast *IString) Exec(ctx *exec.Context) (bool, string, error) {
-	if ast.Expr == nil {
+	if ast.Expr == nil && ast.Ident == nil {
 		return true, ast.Str, nil
 	}
 
+	rok := true
+	var evaled interface{}
 	var buf bytes.Buffer
 	buf.WriteString(ast.Str)
 
-	ok, r, err := ast.Expr.Exec(ctx)
-	if err != nil {
-		return false, "", err
+	if ast.Expr != nil {
+		ok, v, err := ast.Expr.Exec(ctx)
+		if err != nil {
+			return false, "", err
+		}
+		evaled = v
+		rok = rok && ok
+	} else if ast.Ident != nil {
+		ok, v, err := ast.Ident.Exec(ctx)
+		if err != nil {
+			return false, "", err
+		}
+		evaled = v
+		rok = rok && ok
 	}
-	rok := ok
 
-	rstr, err := data.ToString(r)
+	rstr, err := data.ToString(evaled)
 	if err != nil {
 		return false, "", err
 	}
@@ -48,7 +61,7 @@ func (ast *IString) Exec(ctx *exec.Context) (bool, string, error) {
 
 func (ast *IString) Dump(indent int) {
 	fmt.Printf("%sistring:\n", strings.Repeat(" ", indent))
-	fmt.Printf("%sstring: %s\n", strings.Repeat(" ", indent + 2), ast.Str)
+	fmt.Printf("%sstring: '%s'\n", strings.Repeat(" ", indent + 2), ast.Str)
 
 	if ast.Expr != nil {
 		ast.Expr.Dump(indent + 2)

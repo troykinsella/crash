@@ -1,29 +1,29 @@
 package system
 
 import (
-	"os"
 	"github.com/troykinsella/crash/util"
 	"github.com/troykinsella/crash/system/parser"
+	"bufio"
+	"strings"
+	"github.com/troykinsella/crash/system/exec"
 )
 
-func Interpolate(str string, values util.Values) string {
-	str = os.Expand(str, func(match string) string {
-		val := values.GetString(match)
-		return val
-	})
-	return str
-}
+func Interpolate(str string, vars util.Values) (string, error) {
+	r := bufio.NewReader(strings.NewReader(str))
+	p := parser.New(r)
 
-type Interpolator struct {
-	i *Interpreter
-	p *parser.Parser
-}
-
-func NewInterpolator(i *Interpreter, p *parser.Parser) *Interpolator {
-	return &Interpolator{
-		i: i,
-		p: p,
+	istr, err := p.IString()
+	if err != nil {
+		return "", err
 	}
+
+	ctx := exec.NewContext(vars, nil)
+	_, result, err := istr.Exec(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
 }
 
 type interpVals struct {
@@ -37,7 +37,11 @@ func (i *interpVals) Get(name string) interface{} {
 
 func (i *interpVals) GetString(name string) string {
 	val := i.wrapped.GetString(name)
-	return Interpolate(val, i.vars)
+	str, err := Interpolate(val, i.vars)
+	if err != nil {
+		panic(err)
+	}
+	return str
 }
 
 func (i *interpVals) AsMap() map[string]interface{} {

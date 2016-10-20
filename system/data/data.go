@@ -51,7 +51,7 @@ func ToBool(any interface{}) (bool, error) {
 	return false, fmt.Errorf("Type cannot be converted to bool: %s", reflect.TypeOf(any).String())
 }
 
-func ToInt64(any interface{}) (int64, error) {
+func ToInt(any interface{}) (int64, error) {
 	if any == nil || any == "" {
 		return 0, nil
 	}
@@ -91,7 +91,7 @@ func LooseEqual(left, right interface{}) (bool, error) {
 		return l == r, nil
 	case int, int8, int16, int32, int64:
 		li := int64(l.(int))
-		r, err := ToInt64(right)
+		r, err := ToInt(right)
 		if err != nil {
 			return false, nil // Allow parse errors
 		}
@@ -141,7 +141,7 @@ func Compare(left, right interface{}) (int, error) {
 		return CompareBool(l, r), nil
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		li := int64(l.(int))
-		r, err := ToInt64(right)
+		r, err := ToInt(right)
 		if err != nil {
 			return 0, nil // Allow parse errors
 		}

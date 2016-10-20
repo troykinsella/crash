@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"strconv"
 	"fmt"
 )
 
@@ -27,7 +26,7 @@ func (h *Http) Run() (*Result, error) {
 
 	client := &http.Client{}
 
-	h.config.Log.Debug(method + " " + url)
+	h.config.Log.Debugf("%s %s", method, url)
 
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
@@ -48,12 +47,11 @@ func (h *Http) Run() (*Result, error) {
 }
 
 func (h *Http) genResult(resp *http.Response) (*Result, error) {
-
 	data := make(map[string]interface{})
 	data["status-code"] = resp.StatusCode
 	data["headers"] = resp.Header
 
-	h.config.Log.Info(resp.Request.Method + " " + resp.Request.URL.String() + " -> " + strconv.FormatInt(int64(resp.StatusCode), 10))
+	h.config.Log.Infof("%s %s -> %d", resp.Request.Method, resp.Request.URL.String(), resp.StatusCode)
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

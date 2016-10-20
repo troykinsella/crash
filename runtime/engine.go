@@ -8,11 +8,12 @@ import (
 	"github.com/troykinsella/crash/logging"
 	"fmt"
 	"errors"
+	"github.com/troykinsella/crash/system/data"
 )
 
 type engine struct {
 	rootCtx *Context
-	checkInterp *system.Interpreter
+	interp  *system.Interpreter
 }
 
 func newEngine(config *crash.Config, ctx *Context) (*engine, error) {
@@ -24,7 +25,7 @@ func newEngine(config *crash.Config, ctx *Context) (*engine, error) {
 
 	return &engine{
 		rootCtx: ctx,
-		checkInterp: i,
+		interp: i,
 	}, nil
 }
 
@@ -84,36 +85,118 @@ func (e *engine) selectStep(step *StepExec, ctx *Context) (logging.MessageType, 
 	}
 }
 
-func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
-	ch := make(chan *StepResult)
-	s := step.Step
+func (e *engine) iterateWithList(ss *system.ScriptList, ctx *Context) (util.Iterator, error) {
+	_, list, _, err := e.interp.RunAll(ss, ctx.vars)
+	if err != nil {
+		return nil, err
+	}
 
-	mt, stepName := e.selectStep(step, ctx)
+	return util.NewSliceIterator(list)
+}
+
+func (e *engine) iterateWithItem(s *system.Script, ctx *Context) (itr util.Iterator, err error) {
+	_, result, _, err := e.interp.Run(s, ctx.vars)
+	if err != nil {
+		return nil, err
+	}
+
+	switch val := result.(type) {
+	case []interface{}:
+		itr, err = util.NewSliceIterator(val)
+	case map[interface{}]interface{}:
+		fmt.Printf("MAP\n")
+	case int64:
+		itr, err = util.NewRangeIterator(0, int(val), 1)
+	default:
+		n, err := data.ToInt(val)
+		if err == nil {
+			itr, err = util.NewRangeIterator(0, int(n), 1)
+		}
+	}
+	return
+}
+
+func (e *engine) iterateWith(w *WithDirective, ctx *Context) (util.Iterator, error) {
+	switch {
+	case w.Item != nil:
+		return e.iterateWithItem(w.Item, ctx)
+	case w.List != nil:
+		return e.iterateWithList(w.List, ctx)
+	}
+	return nil, errors.New("internal error")
+}
+
+func (e *engine) runStepLoop(se *StepExec, ctx *Context) (chan *StepResult) {
+	ch := make(chan *StepResult)
+
+	itr, err := e.iterateWith(se.Step.With, ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		results := make([]*StepResult, 0)
+
+		for itr.HasNext() {
+			val := itr.Next()
+
+			idx := se.Step.With.As
+			if idx == "" {
+				idx = "i"
+			}
+
+			vCtx := ctx.NewChild()
+			vCtx.vars.Set(idx, val)
+
+			vStep := NewStepExec(se.Step)
+			vStep.looped = true
+
+			subCh := e.runStep(vStep, vCtx)
+
+			r := <- subCh
+			results = append(results, r)
+		}
+
+		ch <- aggregateResults(results)
+	}()
+
+	return ch
+}
+
+func (e *engine) runStep(se *StepExec, ctx *Context) (chan *StepResult) {
+	s := se.Step
+	if s.With != nil && !se.looped {
+		return e.runStepLoop(se, ctx)
+	}
+
+	ch := make(chan *StepResult)
+
+	mt, stepName := e.selectStep(se, ctx)
 	var ch2 chan *StepResult
 
 	ctx = ctx.NewChild()
 	ctx.log.Start(mt, stepName)
-	step.Start()
+	se.Start()
 
 	switch {
 	case s.Run != nil:
-		ch2 = e.runAction(step, ctx)
+		ch2 = e.runAction(se, ctx)
 	case s.Serial != nil:
-		ch2 = e.runSerial(step, ctx)
+		ch2 = e.runSerial(se, ctx)
 	case s.Parallel != nil:
-		ch2 = e.runParallel(step, ctx)
+		ch2 = e.runParallel(se, ctx)
 	}
 
 	go func() {
 		select {
 		case result := <-ch2:
-			step.Finish()
+			se.Finish()
 			ctx.Commit()
-			ctx.log.Finish(mt, result.Ok, step.RunDuration(), stepName, result.Data)
-			e.afterStep(step, ctx, result, ch)
+			ctx.log.Finish(mt, result.Ok, se.RunDuration(), stepName, result.Data)
+			e.afterStep(se, ctx, result, ch)
 
-		case <-util.Timeout(step.Step.Timeout):
-		    ctx.log.Error(mt, step.Step.Timeout, fmt.Errorf("timed out"), stepName)
+		case <-util.Timeout(se.Step.Timeout):
+		    ctx.log.Error(mt, se.Step.Timeout, fmt.Errorf("timed out"), stepName)
 			ch <- &StepResult{
 				Ok: false,
 			}
@@ -123,24 +206,24 @@ func (e *engine) runStep(step *StepExec, ctx *Context) (chan *StepResult) {
 	return ch
 }
 
-func (e *engine) afterStep(step *StepExec,
+func (e *engine) afterStep(se *StepExec,
                            ctx *Context,
                            result *StepResult,
                            ch chan *StepResult) {
-	if step.Step.Checks != nil {
-		e.doChecks(step, ctx, result, ch)
+	if se.Step.Checks != nil {
+		e.doChecks(se, ctx, result, ch)
 	} else {
 		ch <- result
 	}
 }
 
-func (e *engine) doChecks(step *StepExec,
+func (e *engine) doChecks(se *StepExec,
                           ctx *Context,
                           result *StepResult,
                           ch chan *StepResult) {
 	rok := true
-	for _, check := range *step.Step.Checks {
-		ok, _, msg, err := e.checkInterp.Statement(check, ctx.vars)
+	for _, check := range *se.Step.Checks {
+		ok, _, msg, err := e.interp.Run(check, ctx.vars)
 		if err != nil {
 			ch <- &StepResult{
 				Ok: false,
@@ -158,20 +241,21 @@ func (e *engine) doChecks(step *StepExec,
 	ch <- result
 }
 
-func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
+func (e *engine) runAction(se *StepExec, ctx *Context) (chan *StepResult) {
 	ch := make(chan *StepResult)
-	s := step.Step.Run
-
-	params := util.AsStringValues(s.Params)
-	params = system.NewInterpolatedValues(params, ctx.vars)
-
-	a := action.NewAction(&action.ActionConfig{
-		Name:   s.Type,
-		Params: params,
-		Log: e.rootCtx.log,
-	})
 
 	go func() {
+		s := se.Step.Run
+
+		params := util.AsStringValues(s.Params)
+		params = system.NewInterpolatedValues(params, ctx.vars)
+
+		a := action.NewAction(&action.ActionConfig{
+			Name:   s.Type,
+			Params: params,
+			Log: e.rootCtx.log,
+		})
+
 		result, err := a.Run()
 
 		success := err == nil
@@ -192,14 +276,15 @@ func (e *engine) runAction(step *StepExec, ctx *Context) (chan *StepResult) {
 	return ch
 }
 
-func (e *engine) runSerial(step *StepExec, ctx *Context) (chan *StepResult) {
+func (e *engine) runSerial(se *StepExec, ctx *Context) (chan *StepResult) {
 	ch := make(chan *StepResult)
-	s := step.Step.Serial
-
-	stepLen := len(*s)
-	results := make([]*StepResult, stepLen)
 
 	go func() {
+		s := se.Step.Serial
+
+		stepLen := len(*s)
+		results := make([]*StepResult, stepLen)
+
 		for i, config := range *s {
 			subStep := NewStepExec(&config)
 			subCh := e.runStep(subStep, ctx)
@@ -212,19 +297,22 @@ func (e *engine) runSerial(step *StepExec, ctx *Context) (chan *StepResult) {
 	return ch
 }
 
-func (e *engine) runParallel(step *StepExec, ctx *Context) (chan *StepResult) {
+func (e *engine) runParallel(se *StepExec, ctx *Context) (chan *StepResult) {
 	ch := make(chan *StepResult)
-	p := step.Step.Parallel
-
-	channels := make([]chan *StepResult, len(*p))
-
-	for i, config := range *p {
-		subStep := NewStepExec(&config)
-		channels[i] = e.runStep(subStep, ctx)
-	}
 
 	go func() {
+		p := se.Step.Parallel
+
+		channels := make([]chan *StepResult, len(*p))
+
+		for i, config := range *p {
+			subStep := NewStepExec(&config)
+			channels[i] = e.runStep(subStep, ctx)
+		}
+
 		var results = make([]*StepResult, len(channels))
+
+		// fan in
 		for i, ch := range channels {
 			results[i] = <- ch
 		}

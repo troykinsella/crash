@@ -43,6 +43,7 @@ Properties | Required | Description
 ---------- | -------- | -----------
 check      | no       | A list of assertions to perform after the execution of the step is complete.
 timeout    | no       | A time duration after which the step is aborted and is considered to have failed. A duration string is a sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "1.5s" or "2s300ms". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". Zero or negative timeouts are not permitted.
+with       | no       | A structure that controls the step execution repetition.
 
 ### Vars
 
@@ -56,6 +57,10 @@ vars:
   foo: bar
 # ...
 ```
+
+### With
+
+
 
 ## Plan Steps
 

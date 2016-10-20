@@ -24,7 +24,7 @@ func NewInterpreter(log *logging.Logger,
 	}
 
 	for name, str := range scripts {
-		ch, err := NewScript(str)
+		ch, err := NewScript(str, STMT)
 		if err != nil {
 			return nil, err
 		}
@@ -35,16 +35,38 @@ func NewInterpreter(log *logging.Logger,
 	return result, nil
 }
 
-func (interp *Interpreter) Statement(s *Script, vars util.Values) (bool, interface{}, string, error) {
+func (interp *Interpreter) Run(s *Script, vars util.Values) (ok bool, result interface{}, msg string, err error) {
 
 	ctx := exec.NewContext(vars, interp.ops)
 
-	ok, result, msg, err := s.n.Exec(ctx)
-	if err != nil {
-		return false, nil, "", err
+	if s.expr != nil {
+		ok, result, err = s.expr.Exec(ctx)
+	} else if s.stmt != nil {
+		ok, result, msg, err = s.stmt.Exec(ctx)
 	}
+
 	if msg == "" {
 		msg = s.str
 	}
-	return ok, result, msg, nil
+	return
+}
+
+func (interp *Interpreter) RunAll(sl *ScriptList, vars util.Values) (bool, []interface{}, []string, error) {
+	rok := true
+	n := len(*sl)
+	results := make([]interface{}, n)
+	msgs := make([]string, n)
+
+	for i, s := range *sl {
+		ok, result, msg, err := interp.Run(s, vars)
+		if err != nil {
+			return false, nil, nil, err
+		}
+
+		rok = rok && ok
+		results[i] = result
+		msgs[i] = msg
+	}
+
+	return rok, results, msgs, nil
 }

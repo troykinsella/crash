@@ -1,12 +1,12 @@
-site_name: Crash Documentation
+site_name: Crash User Guide
 repo_url: https://github.com/troykinsella/crash
 site_author: Troy Kinsella
 site_favicon: favicon.ico
 copyright: Copyright © 2016 Troy Kinsella
 pages:
 - index.md
-- Test Results: test_results.md
-- Crashfile Reference: crashfile_reference.md
+- Results: results.md
+- Crashfile: crashfile.md
 - Commands: commands.md
 - Actions:
   - http: actions/http.md

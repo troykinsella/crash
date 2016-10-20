@@ -58,6 +58,10 @@ func newPlan(config *crash.PlanConfig) (*Plan, error) {
 }
 
 func newSteps(configs *crash.StepConfigs) (*Steps, error) {
+	if configs == nil {
+		return nil, nil
+	}
+
 	steps := make(Steps, len(*configs))
 	for i, sc := range *configs {
 		s, err := newStep(&sc)
@@ -86,7 +90,22 @@ func parseTimeout(s string) (time.Duration, error) {
 }
 
 func newStep(config *crash.StepConfig) (*Step, error) {
-	ss, err := system.NewScriptSet(config.Checks)
+	as, err := newActionStep(config.Run)
+	if err != nil {
+		return nil, err
+	}
+
+	ss, err := newSteps(config.Serial)
+	if err != nil {
+		return nil, err
+	}
+
+	ps, err := newSteps(config.Parallel)
+	if err != nil {
+		return nil, err
+	}
+
+	ch, err := system.NewScriptList(config.Checks, system.STMT)
 	if err != nil {
 		return nil, err
 	}
@@ -96,46 +115,54 @@ func newStep(config *crash.StepConfig) (*Step, error) {
 		return nil, err
 	}
 
-	if config.Run != nil {
-		as, err := newActionStep(config.Run)
-		if err != nil {
-			return nil, err
-		}
-		return &Step{
-			Run: as,
-			Checks: ss,
-			Timeout: to,
-		}, nil
+	wd, err := newWithDirective(config.With)
+	if err != nil {
+		return nil, err
 	}
 
-	if config.Serial != nil {
-		s, err := newSteps(config.Serial)
-		if err != nil {
-			return nil, err
-		}
-		return &Step{
-			Serial: s,
-			Checks: ss,
-			Timeout: to,
-		}, nil
+	if as == nil && ss == nil && ps == nil {
+		return nil, errors.New("require action, serial, or parallel step")
 	}
 
-	if config.Parallel != nil {
-		p, err := newSteps(config.Parallel)
-		if err != nil {
-			return nil, err
-		}
-		return &Step{
-			Parallel: p,
-			Checks: ss,
-			Timeout: to,
-		}, nil
+	return &Step{
+		Run: as,
+		Serial: ss,
+		Parallel: ps,
+		Checks: ch,
+		Timeout: to,
+		With: wd,
+	}, nil
+}
+
+func newWithDirective(config *crash.WithConfig) (*WithDirective, error) {
+	if config == nil {
+		return nil, nil
 	}
 
-	return nil, errors.New("internal error")
+	it, err := system.NewScript(config.Item, system.EXPR)
+	if err != nil {
+		return nil, err
+	}
+
+	ls, err := system.NewScriptList(config.List, system.EXPR)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WithDirective{
+		Item: it,
+		List: ls,
+		Map: config.Map,
+
+		As: config.As,
+	}, nil
 }
 
 func newActionStep(config *crash.ActionConfig) (*ActionStep, error) {
+	if config == nil {
+		return nil, nil
+	}
+
 	// TODO: some validation
 	return &ActionStep{
 		Name: config.Name,
@@ -156,8 +183,9 @@ type Step struct {
 	Serial   *Steps
 	Parallel *Steps
 
-	Checks  *system.ScriptSet
+	Checks  *system.ScriptList
 	Timeout time.Duration
+	With    *WithDirective
 }
 
 type Steps []Step
@@ -166,4 +194,12 @@ type ActionStep struct {
 	Name   string
 	Type   string
 	Params map[string]string
+}
+
+type WithDirective struct {
+	Item    *system.Script
+	List    *system.ScriptList
+	Map     map[string]string
+
+	As      string
 }

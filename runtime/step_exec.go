@@ -8,6 +8,7 @@ import (
 type StepExec struct {
 	stopWatch *util.StopWatch
 	Step *Step
+	looped bool
 }
 
 type StepResult struct {

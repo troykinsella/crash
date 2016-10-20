@@ -66,6 +66,7 @@ type StepConfig struct {
 	Run      *ActionConfig `yaml:"run,omitempty"`
 	Serial   *StepConfigs  `yaml:"serial,omitempty"`
 	Parallel *StepConfigs  `yaml:"parallel,omitempty"`
+	With     *WithConfig   `yaml:"with,omitempty"`
 
 	Success *StepConfigs `yaml:"success,omitempty"`
 	Failure *StepConfigs `yaml:"failure,omitempty"`
@@ -81,4 +82,19 @@ type ActionConfig struct {
 	Name   string            `yaml:"name"`
 	Type   string            `yaml:"type"`
 	Params map[string]string `yaml:"params"`
+}
+
+type WithConfig struct {
+	Item    string                      `yaml:"item,omitempty"`
+	List    []string                    `yaml:"list,omitempty"`
+	Map     map[string]string           `yaml:"map,omitempty"`
+	Range   *WithRangeConfig            `yaml:"range,omitempty"`
+
+	As      string                      `yaml:"as,omitempty"`
+}
+
+type WithRangeConfig struct {
+	From    string     `yaml:"from"`
+	To      string     `yaml:"to"`
+	Step    string     `yaml:"step,omitempty"`
 }

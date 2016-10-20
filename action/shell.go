@@ -3,7 +3,6 @@ package action
 import (
 	"os/exec"
 	"fmt"
-	"github.com/troykinsella/crash/logging"
 	"bytes"
 	"strings"
 )
@@ -13,12 +12,11 @@ type Shell struct {
 }
 
 func (s *Shell) Run() (*Result, error) {
-
 	str := s.config.Params.GetString("command")
 	if str == "" {
 		return nil, fmt.Errorf("command parameter required")
 	}
-	s.config.Log.Start(logging.INFO, str)
+	s.config.Log.Info(str)
 
 	cmd := exec.Command("sh", "-c", str)
 	var outBuf bytes.Buffer

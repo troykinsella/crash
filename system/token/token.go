@@ -31,6 +31,8 @@ const (
 
 	INTERPOLATE_BEGIN
 	INTERPOLATE_END
+
+	ESCAPE
 )
 
 func (t Token) String() string {
@@ -53,8 +55,9 @@ func (t Token) String() string {
 	case OR: return "or"
 	case XOR: return "xor"
 	case NOT: return "not"
-	case INTERPOLATE_BEGIN: return "${"
-	case INTERPOLATE_END: return "}"
+	case INTERPOLATE_BEGIN: return "interpolate_begin"
+	case INTERPOLATE_END: return "interpolate_end"
+	case ESCAPE: return "escape"
 	}
 	return ""
 }

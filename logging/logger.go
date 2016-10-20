@@ -65,8 +65,16 @@ func (l *Logger) Info(msg string) {
 	l.log(INFO, -1, nil, nil, msg, nil)
 }
 
+func (l *Logger) Infof(f string, args ...interface{}) {
+	l.Info(fmt.Sprintf(f, args...))
+}
+
 func (l *Logger) Debug(msg string) {
 	l.log(DEBUG, -1, nil, nil, msg, nil)
+}
+
+func (l *Logger) Debugf(f string, args ...interface{}) {
+	l.Debug(fmt.Sprintf(f, args...))
 }
 
 func (l *Logger) Check(ok bool, msg string, data map[string]interface{}) {

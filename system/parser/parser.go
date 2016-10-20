@@ -24,7 +24,7 @@ Group       = "(" Expression ")" .
 Option      = "[" Expression "]" .
 Repetition  = "{" Expression "}" .
 
-Grammar
+Grammar (NEEDS UPDATING)
 =======
 
 Statement       = Operation [ Comment ] .
@@ -72,41 +72,22 @@ binary_op     = "and" | "or" | "xor" .
 
 */
 
-type tokenScanner struct {
-	s   *scanner.Scanner
+var traceEnabled = false
 
-	buf bool
+type Parser struct {
+	s *scanner.Scanner
+
+	trace bool
+	indent int
+
 	tok token.Token
 	lit string
 }
 
-func (ts *tokenScanner) scan() (token.Token, string) {
-	if ts.buf {
-		ts.buf = false
-		return ts.tok, ts.lit
-	}
-
-	ts.tok, ts.lit = ts.s.Scan()
-	return ts.tok, ts.lit
-}
-
-func (ts *tokenScanner) unscan() {
-	ts.buf = true
-}
-
-type Parser struct {
-	ts *tokenScanner
-
-	trace bool
-	indent int
-}
-
 func New(r *bufio.Reader) *Parser {
 	p := &Parser{
-		ts: &tokenScanner{
-			s: scanner.New(r),
-		},
-		trace: false, // TEMP
+		s: scanner.New(r),
+		trace: traceEnabled,
 	}
 	p.next()
 	return p
@@ -147,14 +128,13 @@ func un(p *Parser) {
 }
 
 func (p *Parser) next() {
-	p.ts.scan()
+	p.tok, p.lit = p.s.Scan()
 
-	if p.ts.tok == token.WS {
-		p.ts.scan()
+	if p.tok == token.WS {
+		p.tok, p.lit = p.s.Scan()
 	}
-
 	if p.trace {
-		fmt.Printf("next: %s, literal=%s\n", p.ts.tok, p.ts.lit)
+		fmt.Printf("next: %s, literal=%s\n", p.tok, p.lit)
 	}
 }
 
@@ -163,14 +143,14 @@ func (p *Parser) err(msg string) {
 }
 
 func (p *Parser) errExpected(expected string) {
-	ln, col := p.ts.s.Pos()
-	p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.ts.lit, p.ts.tok, expected))
+	ln, col := p.s.Pos()
+	p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.lit, p.tok, expected))
 }
 
 func (p *Parser) expect(t token.Token) {
-	if p.ts.tok != t {
-		ln, col := p.ts.s.Pos()
-		p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.ts.lit, p.ts.tok, t))
+	if p.tok != t {
+		ln, col := p.s.Pos()
+		p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.lit, p.tok, t))
 	}
 	p.next()
 }
@@ -186,38 +166,50 @@ func (p *Parser) IString() (a *ast.IString, err error) {
 		}
 	}()
 
+	// First, put back the current token so scanner.SeekInterp() can see it
+	p.s.Unscan()
+
 	a = p.istr()
 	return
 }
 
 func (p *Parser) istr() *ast.IString {
-	tok, str := p.ts.s.SeekInterp()
+	tok, expectEnd, str := p.s.SeekInterp()
 	if tok == token.EOF {
-		if str == "" {
-			return nil
-		}
 		return &ast.IString{
 			Str: str,
 		}
 	}
 
-	p.next()
-	expr, err := p.Expression()
-	if err != nil {
-		panic(err) // handled by IString
+	var expr *ast.Expression
+	var ident *ast.Identifier
+	var next *ast.IString
+
+	if expectEnd {
+		p.next()
+		e, err := p.Expression()
+		if err != nil {
+			panic(err) // handled by IString
+		}
+		expr = e
+
+		// Expect } (but don't call next() after)
+		if p.tok != token.INTERPOLATE_END {
+			ln, col := p.s.Pos()
+			p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.lit, p.tok, token.INTERPOLATE_END))
+		}
+
+	} else if p.tok != token.EOF {
+		p.next()
+		ident = p.parseIdentifier()
 	}
 
-	// Expect } (but don't call next() after)
-	if p.ts.tok != token.INTERPOLATE_END {
-		ln, col := p.ts.s.Pos()
-		p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.ts.lit, p.ts.tok, token.INTERPOLATE_END))
-	}
-
-	next := p.istr()
+	next = p.istr()
 
 	return &ast.IString{
 		Str: str,
 		Expr: expr,
+		Ident: ident,
 		Next: next,
 	}
 }
@@ -236,15 +228,14 @@ func (p *Parser) Statement() (a *ast.Statement, err error) {
 	op := p.operation()
 
 	var com *ast.IString
-	if p.ts.tok == token.COMMENT {
-		// No next() here
-
+	if p.tok == token.COMMENT {
+		p.next()
 		com, err = p.IString()
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		p.ts.unscan()
+		p.s.Unscan()
 	}
 
 	a = &ast.Statement{
@@ -265,18 +256,18 @@ func (p *Parser) operation() *ast.Operation {
 
 	// Optional: "not"
 	n := false
-	if p.ts.tok == token.NOT {
+	if p.tok == token.NOT {
 		n = true
 		p.next()
 	}
 
 	// Operation
-	op := p.ts.lit
+	op := p.lit
 	p.expect(token.IDENT)
 
 	// Arguments
 	var arguments *ast.ExpressionList
-	if p.ts.tok != token.EOF && p.ts.tok != token.COMMENT { // Dip back into statement rules. Doesn't belong here.
+	if p.tok != token.EOF && p.tok != token.COMMENT { // Dip back into statement rules. Doesn't belong here.
 		arguments = p.parseExpressionList()
 	}
 
@@ -301,7 +292,7 @@ func (p *Parser) parseExpressionList() *ast.ExpressionList {
 			panic(err) // handled by p.Statement
 		}
 		exprs = append(exprs, n)
-		if p.ts.tok == token.COMMA {
+		if p.tok == token.COMMA {
 			p.next()
 		} else {
 			break
@@ -340,12 +331,12 @@ func (p *Parser) parsePrimaryExpr() *ast.PrimaryExpr {
 	r := operand
 
 	for {
-		if p.ts.tok == token.DOT {
+		if p.tok == token.DOT {
 			sel := p.parseSelectorExpr(r)
 			r = &ast.PrimaryExpr{
 				Selector: sel,
 			}
-		} else if p.ts.tok == token.OPEN_SQUARE_BRACKET {
+		} else if p.tok == token.OPEN_SQUARE_BRACKET {
 			idx := p.parseIndexExpr(r)
 			r = &ast.PrimaryExpr{
 				Index: idx,
@@ -365,15 +356,13 @@ func (p *Parser) parseOperand() *ast.PrimaryExpr {
 
 	var pexpr *ast.PrimaryExpr
 
-	t := p.ts.tok
+	t := p.tok
 
 	if t == token.IDENT {
-		l := p.ts.lit
-		p.printTrace("Ident:", l)
+		i := p.parseIdentifier()
 		pexpr = &ast.PrimaryExpr{
-			Ident: l,
+			Ident: i,
 		}
-		p.next()
 	} else if isLiteral(t) {
 		l := p.parseLiteral()
 		pexpr = &ast.PrimaryExpr{
@@ -393,7 +382,7 @@ func (p *Parser) parseSelectorExpr(operand *ast.PrimaryExpr) *ast.SelectorExpr {
 	}
 
 	p.expect(token.DOT)
-	i := p.ts.lit
+	i := p.lit
 	p.expect(token.IDENT)
 
 	p.printTrace("Ident:", i)
@@ -421,6 +410,19 @@ func (p *Parser) parseIndexExpr(operand *ast.PrimaryExpr) *ast.IndexExpr {
 	}
 }
 
+func (p *Parser) parseIdentifier() *ast.Identifier {
+	if p.trace {
+		defer un(trace(p, "Literal"))
+	}
+
+	r := &ast.Identifier{
+		Name: p.lit,
+	}
+
+	p.expect(token.IDENT)
+	return r
+}
+
 func (p *Parser) parseLiteral() *ast.Literal {
 	if p.trace {
 		defer un(trace(p, "Literal"))
@@ -428,30 +430,27 @@ func (p *Parser) parseLiteral() *ast.Literal {
 
 	var r *ast.Literal
 
-	t := p.ts.tok
-	l := p.ts.lit
-
-	switch p.ts.tok {
+	switch p.tok {
 	case token.STRING:
-		p.printTrace("Str:", l)
+		p.printTrace("Str:", p.lit)
 		r = &ast.Literal{
-			Type: t,
-			Str: l,
+			Type: p.tok,
+			Str: p.lit,
 		}
 	case token.NUMBER:
-		i, err := strconv.ParseInt(l, 10, 0)
+		i, err := strconv.ParseInt(p.lit, 10, 0)
 		if err != nil {
 			panic(err)
 		}
 		p.printTrace("Int:", i)
 		r = &ast.Literal{
-			Type: t,
+			Type: p.tok,
 			Int: i,
 		}
 	case token.TRUE, token.FALSE:
-		p.printTrace("Bool:", t == token.TRUE)
+		p.printTrace("Bool:", p.tok == token.TRUE)
 		r = &ast.Literal{
-			Type: t,
+			Type: p.tok,
 		}
 	default:
 		p.err("string or number or boolean")

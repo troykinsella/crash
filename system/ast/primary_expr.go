@@ -8,7 +8,7 @@ import (
 
 type PrimaryExpr struct {
 	Literal  *Literal
-	Ident    string
+	Ident    *Identifier
 
 	Selector *SelectorExpr
 
@@ -19,15 +19,9 @@ func (ast *PrimaryExpr) Exec(ctx *exec.Context) (bool, interface{}, error) {
 	if ast.Literal != nil {
 		return ast.Literal.Exec(ctx)
 	}
-
-	if ast.Ident != "" {
-		result := ctx.Vars.Get(ast.Ident)
-		if result == nil {
-			return false, nil, fmt.Errorf("Not found: %s", ast.Ident)
-		}
-		return true, result, nil
+	if ast.Ident != nil {
+		return ast.Ident.Exec(ctx)
 	}
-
 	if ast.Selector != nil {
 		return ast.Selector.Exec(ctx)
 	}
@@ -43,8 +37,8 @@ func (ast *PrimaryExpr) Dump(indent int) {
 	if ast.Literal != nil {
 		ast.Literal.Dump(indent + 4)
 	}
-	if ast.Ident != "" {
-		fmt.Printf("%sidentifier: %s\n", strings.Repeat(" ", indent + 4), ast.Ident)
+	if ast.Ident != nil {
+		ast.Ident.Dump(indent + 4)
 	}
 	if ast.Selector != nil {
 		ast.Selector.Dump(indent + 4)

@@ -13,14 +13,14 @@ var eof = rune(0)
 
 
 type Scanner struct {
-	r *bufio.Reader
+	in *RuneReader
 	col uint16
 	line uint16
 }
 
-func New(r *bufio.Reader) *Scanner {
+func New(in *bufio.Reader) *Scanner {
 	return &Scanner{
-		r: r,
+		in: NewRuneReader(in),
 		col: 0,
 		line: 0,
 	}
@@ -30,8 +30,8 @@ func (s *Scanner) Pos() (uint16, uint16) {
 	return s.line, s.col
 }
 
-func (s *Scanner) Read() rune {
-	ch, _, err := s.r.ReadRune()
+func (s *Scanner) read() rune {
+	ch, err := s.in.Read()
 	if err != nil {
 		return eof
 	}
@@ -39,26 +39,28 @@ func (s *Scanner) Read() rune {
 	return ch
 }
 
-func (s *Scanner) Unread() {
+func (s *Scanner) unread() {
 	s.col--
-	s.r.UnreadRune()
+	s.in.Unread()
 }
 
-func (s *Scanner) Peek() rune {
-	ch := s.Read()
-	s.Unread()
+func (s *Scanner) peek() rune {
+	ch := s.read()
+	if ch != eof {
+		s.unread()
+	}
 	return ch
 }
 
 func (s *Scanner) consumeWhitespace() string {
 	var buf bytes.Buffer
 	for {
-		ch := s.Read()
+		ch := s.read()
 		if ch == eof {
 			break
 		}
 		if !isWhitespace(ch) {
-			s.Unread()
+			s.unread()
 			break
 		}
 		buf.WriteRune(ch)
@@ -67,20 +69,19 @@ func (s *Scanner) consumeWhitespace() string {
 }
 
 func (s *Scanner) consumeComment() token.Token {
-	s.Read()
+	s.read()
 
-	if ch := s.Read(); ch != '/' {
-		panic(fmt.Errorf("invalid comment: %s", ch))
+	if ch := s.read(); ch != '/' {
+		return token.ILLEGAL
 	}
 
 	// Skip initial whitespace
-	for {
+	/*for {
 		ch := s.Read()
-		if ch != ' ' || ch == '\t' {
-			s.Unread()
+		if ch != ' ' && ch != '\t' {
 			break
 		}
-	}
+	}*/
 
 	return token.COMMENT
 }
@@ -88,10 +89,10 @@ func (s *Scanner) consumeComment() token.Token {
 func (s *Scanner) consumeString() (token.Token, string) {
 	var buf bytes.Buffer
 
-	startQuote := s.Read()
+	startQuote := s.read()
 
 	for {
-		ch := s.Read()
+		ch := s.read()
 		if ch == eof {
 			panic(fmt.Errorf("Unexpected end of file: %s", buf.String()))
 		}
@@ -106,19 +107,18 @@ func (s *Scanner) consumeString() (token.Token, string) {
 
 func (s *Scanner) consumeIdentifier() (token.Token, string) {
 	var buf bytes.Buffer
-	ch := s.Read()
-	dollar := ch == '$'
+	ch := s.read()
 	buf.WriteRune(ch)
 
 	for {
-		ch = s.Read();
+		ch = s.read();
 		if ch == eof {
 			break
 		}
-		if (dollar && isDigit(ch)) || isIdentifier(ch) {
+		if isIdentifier(ch) {
 			buf.WriteRune(ch)
 		} else {
-			s.Unread()
+			s.unread()
 			break
 		}
 	}
@@ -145,15 +145,15 @@ func (s *Scanner) consumeIdentifier() (token.Token, string) {
 
 func (s *Scanner) consumeNumber() (token.Token, string) {
 	var buf bytes.Buffer
-	buf.WriteRune(s.Read())
+	buf.WriteRune(s.read())
 
 	for {
-		ch := s.Read();
+		ch := s.read();
 		if ch == eof {
 			break
 		}
 		if !isDigit(ch) {
-			s.Unread()
+			s.unread()
 			break
 		}
 		buf.WriteRune(ch)
@@ -162,8 +162,14 @@ func (s *Scanner) consumeNumber() (token.Token, string) {
 	return token.NUMBER, buf.String()
 }
 
+func (s *Scanner) Unscan() {
+	s.in.Rewind()
+}
+
 func (s *Scanner) Scan() (token.Token, string) {
-	ch := s.Peek()
+	s.in.Reset()
+
+	ch := s.peek()
 	if ch == eof {
 		return token.EOF, ""
 	}
@@ -184,7 +190,7 @@ func (s *Scanner) Scan() (token.Token, string) {
 		return s.consumeComment(), ""
 	}
 
-	ch = s.Read()
+	ch = s.read()
 
 	switch ch {
 	case '(': return token.OPEN_BRACKET, ""
@@ -194,32 +200,57 @@ func (s *Scanner) Scan() (token.Token, string) {
 	case ',': return token.COMMA, ""
 	case '.': return token.DOT, ""
 	case '}': return token.INTERPOLATE_END, ""
+	case '\\': return token.ESCAPE, ""
 	}
 
 	if ch == '$' {
-		ch = s.Read()
+		lit := "$"
+		ch = s.peek()
 		if ch == '{' {
-			return token.INTERPOLATE_BEGIN, ""
+			lit += "{"
+			s.read()
 		}
-		s.Unread()
+		return token.INTERPOLATE_BEGIN, lit
 	}
 
 	return token.ILLEGAL, string(ch)
 }
 
-func (s *Scanner) SeekInterp() (token.Token, string) {
+// return bool is "expect interpolate end"
+func (s *Scanner) SeekInterp() (token.Token, bool, string) {
 	var buf bytes.Buffer
 
+	escape := false
+	close := false
 	for {
-		ch := s.Read()
+		ch := s.read()
 		if ch == eof {
-			return token.EOF, buf.String()
+			return token.EOF, false, buf.String()
 		}
-		if ch == '$' {
-			if s.Peek() == '{' {
-				s.Read()
-				return token.INTERPOLATE_BEGIN, buf.String()
+
+		if ch == '\\' {
+			escape = true
+		} else if ch == '$' && !escape {
+			p := s.peek()
+
+			if p == '{' {
+				s.read()
+				close = true
 			}
+
+			// Special case: '$' before EOF -> don't bother returning interpolate_begin
+			p = s.peek()
+			if p == eof {
+				buf.WriteRune('$')
+				if close {
+					buf.WriteRune('{')
+				}
+				return token.EOF, false, buf.String()
+			}
+
+			return token.INTERPOLATE_BEGIN, close, buf.String()
+		} else {
+			escape = false
 		}
 
 		buf.WriteRune(ch)

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"reflect"
 	"fmt"
 )
 
@@ -32,11 +31,15 @@ func ToString(val interface{}) string {
 		return ""
 	}
 
-	if reflect.TypeOf(val).Kind() == reflect.Int {
+	switch val.(type) {
+	case string:
+		return val.(string)
+	case int, int8, int16, int32, int64:
 		return fmt.Sprintf("%d", val)
+	case bool:
+		return fmt.Sprintf("%t", val)
 	}
-
-	return val.(string)
+	return ""
 }
 
 func AsValues(vals map[string]interface{}) Values {

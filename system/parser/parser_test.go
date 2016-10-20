@@ -15,7 +15,7 @@ func TestParser_Parse(t *testing.T) {
 		str string
 		n *ast.Statement
 		err string
-	} {
+	}{
 		{
 			"foo op",
 			&ast.Statement{
@@ -24,7 +24,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -46,10 +48,14 @@ func TestParser_Parse(t *testing.T) {
 								&ast.PrimaryExpr{
 									Index: &ast.IndexExpr{
 										Operand: &ast.PrimaryExpr{
-											Ident: "foo",
+											Ident: &ast.Identifier{
+												Name: "foo",
+											},
 										},
 										Index: &ast.PrimaryExpr{
-											Ident: "bar",
+											Ident: &ast.Identifier{
+												Name: "bar",
+											},
 										},
 									},
 								},
@@ -73,7 +79,9 @@ func TestParser_Parse(t *testing.T) {
 								&ast.PrimaryExpr{
 									Selector: &ast.SelectorExpr{
 										Operand: &ast.PrimaryExpr{
-											Ident: "foo",
+											Ident: &ast.Identifier{
+												Name: "foo",
+											},
 										},
 										Ident: "bar",
 									},
@@ -100,13 +108,17 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Selector: &ast.SelectorExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Ident: "bar",
 											},
 										},
 										Index: &ast.PrimaryExpr{
-											Ident: "baz",
+											Ident: &ast.Identifier{
+												Name: "baz",
+											},
 										},
 									},
 								},
@@ -132,10 +144,14 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Index: &ast.IndexExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Index: &ast.PrimaryExpr{
-													Ident: "bar",
+													Ident: &ast.Identifier{
+														Name: "bar",
+													},
 												},
 											},
 										},
@@ -164,7 +180,9 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Selector: &ast.SelectorExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Ident: "bar",
 											},
@@ -172,7 +190,9 @@ func TestParser_Parse(t *testing.T) {
 										Index: &ast.PrimaryExpr{
 											Selector: &ast.SelectorExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "baz",
+													Ident: &ast.Identifier{
+														Name: "baz",
+													},
 												},
 												Ident: "biz",
 											},
@@ -201,7 +221,9 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Selector: &ast.SelectorExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Ident: "bar",
 											},
@@ -209,10 +231,14 @@ func TestParser_Parse(t *testing.T) {
 										Index: &ast.PrimaryExpr{
 											Index: &ast.IndexExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "baz",
+													Ident: &ast.Identifier{
+														Name: "baz",
+													},
 												},
 												Index: &ast.PrimaryExpr{
-													Ident: "biz",
+													Ident: &ast.Identifier{
+														Name: "biz",
+													},
 												},
 											},
 										},
@@ -240,10 +266,14 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Index: &ast.IndexExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Index: &ast.PrimaryExpr{
-													Ident: "bar",
+													Ident: &ast.Identifier{
+														Name: "bar",
+													},
 												},
 											},
 										},
@@ -272,7 +302,9 @@ func TestParser_Parse(t *testing.T) {
 										Operand: &ast.PrimaryExpr{
 											Selector: &ast.SelectorExpr{
 												Operand: &ast.PrimaryExpr{
-													Ident: "foo",
+													Ident: &ast.Identifier{
+														Name: "foo",
+													},
 												},
 												Ident: "bar",
 											},
@@ -298,7 +330,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -309,7 +343,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 						},
@@ -326,7 +362,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -357,7 +395,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -388,7 +428,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -401,10 +443,14 @@ func TestParser_Parse(t *testing.T) {
 								&ast.PrimaryExpr{
 									Index: &ast.IndexExpr{
 										Operand: &ast.PrimaryExpr{
-											Ident: "bar",
+											Ident: &ast.Identifier{
+												Name: "bar",
+											},
 										},
 										Index: &ast.PrimaryExpr{
-											Ident: "baz",
+											Ident: &ast.Identifier{
+												Name: "baz",
+											},
 										},
 									},
 								},
@@ -423,7 +469,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -436,7 +484,9 @@ func TestParser_Parse(t *testing.T) {
 								&ast.PrimaryExpr{
 									Selector: &ast.SelectorExpr{
 										Operand: &ast.PrimaryExpr{
-											Ident: "bar",
+											Ident: &ast.Identifier{
+												Name: "bar",
+											},
 										},
 										Ident: "baz",
 									},
@@ -456,7 +506,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -467,7 +519,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 						},
@@ -484,7 +538,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -495,7 +551,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 							&ast.Expression{
@@ -520,12 +578,16 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 						},
@@ -536,7 +598,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "baz",
+									Ident: &ast.Identifier{
+										Name: "baz",
+									},
 								},
 							},
 						},
@@ -554,7 +618,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 						},
@@ -576,12 +642,16 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 						},
@@ -592,7 +662,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "baz",
+									Ident: &ast.Identifier{
+										Name: "baz",
+									},
 								},
 							},
 							&ast.Expression{
@@ -617,12 +689,16 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "foo",
+									Ident: &ast.Identifier{
+										Name: "foo",
+									},
 								},
 							},
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "bar",
+									Ident: &ast.Identifier{
+										Name: "bar",
+									},
 								},
 							},
 						},
@@ -633,7 +709,9 @@ func TestParser_Parse(t *testing.T) {
 						[]*ast.Expression{
 							&ast.Expression{
 								&ast.PrimaryExpr{
-									Ident: "baz",
+									Ident: &ast.Identifier{
+										Name: "baz",
+									},
 								},
 							},
 							&ast.Expression{
@@ -667,8 +745,89 @@ func TestParser_Parse(t *testing.T) {
 
 		if test.err == "" {
 			if err != nil {
-				t.Errorf("%d. unexpected error: %s\n", i, err.Error())
+				t.Errorf("%d. \"%s\" unexpected error: %s\n", i, test.str, err.Error())
 	 		} else if !reflect.DeepEqual(test.n, n) {
+				fmt.Println("Expected:")
+				test.n.Dump(0)
+				fmt.Println("Actual:")
+				n.Dump(0)
+				t.Errorf("%d. \"%s\" unexpected ast:\nexpected=%#v,\nactual=%#v\n", i, test.str, test.n, n)
+			}
+		} else {
+			if err == nil {
+				t.Errorf("%d. \"%s\" expected error:\nexpected=%s,\nactual=nil\n", i, test.str, test.err)
+			} else if test.err != err.Error() {
+				t.Errorf("%d. \"%s\" unexpected error:\nexpected=%s,\nactual=%s\n", i, test.str, test.err, err.Error())
+			}
+		}
+	}
+}
+
+func TestParser_IString(t *testing.T) {
+	var tests = []struct {
+		str string
+		n *ast.IString
+		err string
+	}{
+		{
+			"foo",
+			&ast.IString{
+				Str: "foo",
+			},
+			"",
+		},
+/*		{ TODO: fix this case
+			" ",
+			&ast.IString{
+				Str: " ",
+			},
+			"",
+		},*/
+		{
+			"$",
+			&ast.IString{
+				Str: "$",
+			},
+			"",
+		},
+		{
+			"${",
+			&ast.IString{
+				Str: "${",
+			},
+			"",
+		},
+		{
+			"foo${",
+			&ast.IString{
+				Str: "foo${",
+			},
+			"",
+		},
+		{
+			"${foo",
+			nil,
+			"[0:7] found '' (eof), expected interpolate_end",
+		},
+		{
+			"$foo",
+			&ast.IString{
+				Str: "",
+				Ident: &ast.Identifier{
+					Name: "foo",
+				},
+			},
+			"",
+		},
+	}
+
+	for i, test := range tests {
+		p := New(bufio.NewReader(strings.NewReader(test.str)))
+		n, err := p.IString()
+		if test.err == "" {
+			if err != nil {
+				t.Errorf("%d. \"%s\" unexpected error: %s\n", i, test.str, err.Error())
+			} else if !reflect.DeepEqual(test.n, n) {
 				fmt.Println("Expected:")
 				test.n.Dump(0)
 				fmt.Println("Actual:")
