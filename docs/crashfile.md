@@ -146,16 +146,16 @@ plans:
         name: home page
         type: http
         params:
-          url: ${base_url}
+          url: $base_url
       check:
-      - status-code in 200, 299 // http status ${status-code} is 4xx
+      - status-code in 200, 299 // http status $status-code is 4xx
       - body contains '<!doctype html>' // has doctype declaration
       - headers.content-type eq 'text/html'
     - run:
         name: about page
         type: http
         params:
-          url: ${base_url}/about.html
+          url: $base_url/about.html
       check:
       - status-code eq 200
       - body contains 'Copyright'

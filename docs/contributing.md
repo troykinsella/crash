@@ -10,6 +10,16 @@ detail as you can think of, including:
 * Step-by-step instructions on how to reproduce the issue
 * Stack traces and any other relevant output
 
+## Submitting a Pull Request
+
+Pull requests are very welcome! All PRs should be created against the `develop` branch.
+
+Please be sure to include:
+
+* `go fmt` formatted code
+* Passing tests
+* User documentation (the `docs/` dir)
+
 ## Building the `crash` Executable
 
 Set up a [Go workspace](https://golang.org/doc/code.html).
