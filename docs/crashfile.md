@@ -60,7 +60,24 @@ vars:
 
 ### With
 
+The `with` directive controls repetition of the enclosing step.
 
+The value of `with` is an object having one of the following properties:
+
+Properties | Description
+---------- | -----------
+list       | A list literal (in yaml). The step will be executed once for every element in the list.
+item       | An expression that evaluates to an iterable value.
+
+The `with` object also accepts an optional `as` property. The value overrides the default
+variable name of `i`, and stores the value of the current element being iterated.
+
+Examples:
+```
+#  with: { list: [10, 20, 30] }
+#  with: { item: 1000, as: i }
+#  with: { item: user_ids, as: user_id }
+```
 
 ## Plan Steps
 
