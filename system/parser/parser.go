@@ -166,14 +166,18 @@ func (p *Parser) IString() (a *ast.IString, err error) {
 		}
 	}()
 
-	// First, put back the current token so scanner.SeekInterp() can see it
-	p.s.Unscan()
-
 	a = p.istr()
 	return
 }
 
 func (p *Parser) istr() *ast.IString {
+	if p.tok == token.EOF {
+		return nil
+	}
+
+	// First, put back the current token so scanner.SeekInterp() can see it
+	p.s.Unscan()
+
 	tok, expectEnd, str := p.s.SeekInterp()
 	if tok == token.EOF {
 		return &ast.IString{
@@ -185,22 +189,17 @@ func (p *Parser) istr() *ast.IString {
 	var ident *ast.Identifier
 	var next *ast.IString
 
+	p.next()
+
 	if expectEnd {
-		p.next()
 		e, err := p.Expression()
 		if err != nil {
 			panic(err) // handled by IString
 		}
 		expr = e
-
-		// Expect } (but don't call next() after)
-		if p.tok != token.INTERPOLATE_END {
-			ln, col := p.s.Pos()
-			p.err(fmt.Sprintf("[%d:%d] found '%s' (%s), expected %s", ln, col, p.lit, p.tok, token.INTERPOLATE_END))
-		}
+		p.expect(token.INTERPOLATE_END)
 
 	} else if p.tok != token.EOF {
-		p.next()
 		ident = p.parseIdentifier()
 	}
 

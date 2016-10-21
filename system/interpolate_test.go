@@ -9,7 +9,6 @@ func TestInterpolate(t *testing.T) {
 	vars := util.AsValues(map[string]interface{}{
 		"foo": "few",
 		"bar": "bahr",
-		"baz": "123",
 	})
 
 	var tests = []struct {
