@@ -1,4 +1,4 @@
-package util
+package system
 
 type Bool struct {
 	b bool

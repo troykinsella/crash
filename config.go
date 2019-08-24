@@ -48,8 +48,8 @@ func (config *Config) Dump() {
 }
 
 type IOConfig struct {
-	Name string
-	Type string
+	Name   string
+	Type   string
 	Params map[string]interface{}
 }
 
@@ -72,8 +72,8 @@ type StepConfig struct {
 	Failure *StepConfigs `yaml:"failure,omitempty"`
 	Always  *StepConfigs `yaml:"always,omitempty"`
 
-	Checks  []string     `yaml:"check,omitempty"`
-	Timeout string       `yaml:"timeout,omitempty"`
+	Checks  []string `yaml:"check,omitempty"`
+	Timeout string   `yaml:"timeout,omitempty"`
 }
 
 type StepConfigs []StepConfig
@@ -85,16 +85,16 @@ type ActionConfig struct {
 }
 
 type WithConfig struct {
-	Item    string                      `yaml:"item,omitempty"`
-	List    []string                    `yaml:"list,omitempty"`
-	Map     map[string]string           `yaml:"map,omitempty"`
-	Range   *WithRangeConfig            `yaml:"range,omitempty"`
+	Item  string            `yaml:"item,omitempty"`
+	List  []string          `yaml:"list,omitempty"`
+	Map   map[string]string `yaml:"map,omitempty"`
+	Range *WithRangeConfig  `yaml:"range,omitempty"`
 
-	As      string                      `yaml:"as,omitempty"`
+	As string `yaml:"as,omitempty"`
 }
 
 type WithRangeConfig struct {
-	From    string     `yaml:"from"`
-	To      string     `yaml:"to"`
-	Step    string     `yaml:"step,omitempty"`
+	From string `yaml:"from"`
+	To   string `yaml:"to"`
+	Step string `yaml:"step,omitempty"`
 }

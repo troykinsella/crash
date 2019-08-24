@@ -1,0 +1,15 @@
+---
+plans:
+- plan: Sooper Site
+  steps:
+  - run:
+      name: Home Page
+      type: http
+      params:
+        method: get
+        url: http://example.com
+    check:
+    - status-code in 200, 299 // http status ${status-code} is 2xx
+    - body contains '<!doctype html>' // has html5 doctype declaration
+    - headers.content-type eq 'text/html; charset=utf8'
+

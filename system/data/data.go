@@ -148,7 +148,7 @@ func Compare(left, right interface{}) (int, error) {
 		return int(li - r), nil
 	}
 
-	return 0, fmt.Errorf("Cannot compare types: %s, %s", reflect.TypeOf(left).String(), reflect.TypeOf(right).String())
+	return 0, fmt.Errorf("cannot compare types: %s, %s", reflect.TypeOf(left).String(), reflect.TypeOf(right).String())
 }
 
 func CompareBool(l, r bool) int {

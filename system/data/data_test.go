@@ -134,7 +134,7 @@ func TestCompare(t *testing.T) {
 		if err != nil {
 			t.Errorf("error: %s", err.Error())
 		} else if cmp != test.cmp {
-			t.Errorf("%v. unexpected compare result: expected=%t actual=%t", test, test.cmp, cmp)
+			t.Errorf("%v. unexpected compare result: expected=%d actual=%d", test, test.cmp, cmp)
 		}
 	}
 }

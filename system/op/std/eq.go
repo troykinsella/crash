@@ -5,6 +5,14 @@ import (
 	"github.com/troykinsella/crash/system/data"
 )
 
+type EqError struct {
+	s string
+}
+
+func (ee *EqError) Error() string {
+	return ee.s
+}
+
 type EqOp struct {}
 
 func (o *EqOp) Exec(subjects []interface{}, args []interface{}) (bool, interface{}, error) {
